@@ -1,0 +1,482 @@
+Terraform 
+----------------------------------------------------
+
+1. Terraform --- we use terraform only because we use it to design infra / create infra through a code ( IAC ).#
+2. We can write infra as a code in terraform whther its gcp, azure, aws#
+3. We can create infra with help of terraform on multiple providers.#
+4. With help of ansible modules we can create infra in EC2 etc. but we use ansible as configuration management and 
+   terraform is used purely for infra management.
+5. Infra can be created by terraform and configured with help of ansible.#
+6. terraform in windows can be downloaded through terraform.io and then through cmd we can install the terraform #
+7. for linux installation we use wget and link for terraform latest version and we get the latest zip file for terraform and then unzip it, 
+   send the terraform file to /usr/local/bin. Why beacuse it is now used as an environment variable now and can be accessed from anywhere now.
+8. extension of terraform files is .tf
+9. comment in terraform can be fone like // or #
+	
+	
+	
+-----------
+Hello world
+-----------
+
+
+output hello1 {
+    value = "Hello World"
+}
+
+execute ---> terraform plan
+
+-----------------------------
+
+we can write a tf file into json format too 
+
+{ 
+ "output" : {
+      "hello": {
+            "value": "Hello Pranjal"
+}
+}
+}
+
+----------------------------------
+
+Multi-block TF
+
+we can create multiple blocks in a single terraform file. 
+When complex infra can contains 100 blocks, 
+minimum 500 lines will comes, so we need to have de-structure.
+
+---------------------
+Terraform file de-structure
+
+we can make multiple  tf files and then if we apply terraform plan then it will read all the files in the 
+current directory and will give output of all the files 
+
+the first file will be read in alphabetical order
+
+-----------------------
+***********************************
+user input
+
+variable variable_name {}
+
+output printname {
+
+    value = "Hello ${var.variable_name}"
+}
+
+-------------------------------
+
+
+we also a have a variable file i.e variable.tf and all cariable can be there and simple terraform plan
+
+
+---------------------
+pass variable value through command
+
+if we want to give input through a different tool not by user manually, means dynamically then 
+
+terraform plan -var "variable_name=Pranjal"
+
+##########
+
+
+-------------------------
+Multiple Variable in terraform
+
+we can set a default value of any variable in variable.tf file and when we run terraform plan then that default value will come. but if we give 
+terraform plan -var "variable_name=Pranjal" then that default value will be overidden by terraform new value
+
+how to give default value: 
+***********************************
+variable variable_name {
+  default = "World"
+
+}
+
+----------------
+multiple variable can be defined like:
+
+variable variable_name {
+  default = "World"
+
+}
+
+variable group_name {
+  default = "Wor11ld"
+
+}
+
+if two variable in same lines
+
+terraform plan -var "user=var" -var "user2=var"
+
+#########
+-------------------------------------------
+
+Variable types
+
+variable variable_name {
+  type = string
+  default = "World"
+
+}
+
+variable age {
+  type = number 
+  default = "World"
+
+}
+
+string, number, bool, list(type), set(type), map(type), object({key = type, ...}), tuple([type, ...]), and any (dynamic type).
+
+----------------------------
+list(type) varibale
+
+e.g
+
+variable users {
+    type = list
+}
+output printfist {
+  value = "first user is ${var.users[0]}"
+  
+then if we hit terraform plan then we need to give value in list format
+
+Enter a value: ["a","b","c"]
+
+so it will give "a" as we asked for [0] if we do 1 then it will give b and so on..
+
+we can set default value also in this list
+--------------------------------------
+
+
+Terraform Functions:
+
+we have lot of functions and can be visited on site
+
+e.g - Join function
+
+output printfirst {
+   value = "${join(",",var.users)}"
+   
+   
+so it will give output in comma seperated, in place of comma seperated we can use anything like -,+ etc etc
+
+another example:
+
+output helloworld {
+  value = ${upper(var.users[0])}"
+  }
+
+so it will convert the first word of list into upper case
+
+
+output hellolower {
+  value = ${lower(var.users[2])}"
+  }
+  
+output hellotitle {
+  value = ${title(var.users[3])}"
+  }  ---------- title makes first character of word capital
+  
+  
+--------------------------
+
+Map variable
+
+variable "userage" {
+type = map
+default = {
+  pranjal = 19
+  shivam = 20
+  }
+  }
+  
+  output "iuserage" {
+   value = "my name is pranjal and my age is ${lookup(var.userage, "pranjal"}
+
+
+then when we do terraform plan then we get output as 19
+this lookup is a function
+
+--------------------------------------
+
+map variable dynamically:
+
+variable "userage" {
+type = map
+default = {
+  pranjal = 19
+  shivam = 20
+  }
+  }
+variable "username" {
+type = string
+}
+
+  
+  output "iuserage" {
+   value = "my name is ${var.username} and my age is ${lookup(var.userage, "pranjal"}
+   
+now when u run terraform plan then everything is dynamic
+
+------------------------------
+
+QNA -- how to pass map variable through a command line interface 
+
+like -var "username=pranjal"
+
+so find out for map varibale
+
+-------------------------------
+
+TFVAR files 
+
+if terraform file is so long and also contains many variables then giving input while terraform 
+plan one by one is very very difficult. so for this we have terraform variable file.
+
+e.g 
+
+variable age {
+  type = number
+}
+variable username {
+type = string
+}
+
+output printname {
+ value = "Hello ${var.username}, your age is ${var.age}
+ }
+
+when we run it will ask age and username.
+
+now here variables were only 2 but it can be many so we put variables in a file and it can be read from there
+
+so file name will be terraform.tfvars --- the file name will always be this
+
+so inside terraform.tfvars
+
+age=25
+usrname="Pranjal"
+
+now if I run terraform plan then it will automatically read the values from tfvar file
+
+---------------------------
+
+TFVAR file with different name ( custom TFVAR file)
+
+
+so we have one terraform.tfvars file that contains below data:
+
+age=25
+usrname="Pranjal"
+
+and another custom file with name as custom.tfvars
+
+
+age=25
+usrname="Pranjal"
+
+now when we run terraform plan command then we give as
+
+terraform plan -var-file=custom.tfvars
+
+so by this here it utilises custom tf file 
+
+--------------------------------
+--------------------------------
+
+Read environment variable
+
+for example if we use cmd echo $your_name then it will give blank because we never defined this variable
+
+but if we use export your_name=pranjal and then echo so it will give me pranjal
+
+now we can read this through terraform also these variables
+
+so in export we can give TF_VAR_your_name = Pranjal
+
+so it will take variable by this prefix.
+______________________________________________
+----------------------------------------------
+Terraform core and terraform plugin
+We as a developer create terraform files and then ask the terraform core to create the resources in different cloud providers like Azure, GCP, AWS and whatever resources they create it will end the statement in terraform state file
+
+when we ask terraform to create a resource then it will download the plugin first and plugin are specific to cloud providers, after plugin download then plugin downloaded hits the api of the provider and creates a resource.
+
+-----------------------------
+
+Creating first terraform resource.(GITHUB repo)
+
+terraform plan only reads config files in pwd and gives only output.
+
+our file uses which provider can be listed by command "terraform providers" so it will give github for example.
+
+now after writing a code in githu provider to create repo we need to download plugin
+
+--
+provider "github" {
+  
+}
+
+resource "github_repository" "first repo" {
+  name        = "tf repo"
+  description = "My awesome codebase"
+
+  visibility = "public" 
+  auto_init = "true"
+}
+
+this code u can find on every provider for terraform and resources i.echo
+https://registry.terraform.io/providers/integrations/github/latest/docs/resources/repository
+
+then we make terraform init for plugin download.
+
+then we make command terraform apply but it will ask id pass error as it dont know where to create repo in which user as there are multiple tf users.
+
+----------------------------------------
+
+terraform apply
+
+---
+now firstly to create a repo we create a token and add token in code.
+
+provider "github" {
+  
+  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
+  
+}
+
+resource "github_repository" "first repo" {
+  name        = "tf repo"
+  description = "My awesome codebase"
+
+  visibility = "public" 
+  auto_init = "true"
+}
+
+auto init is for readme file.
+
+----------------------------------
+
+Terraform .tsstate file and destroy command
+
+
+after apply u see one tsstate file is made and it contains all the information of instances and everything info.
+
+always after apply it asks yes/no so directly make --auto-approve 
+
+terraform destroy - command deletes all the resources and it will take resource info from the tfstate file and applyting terraform apply command twice makes a new file named as backup 
+
+destroy command then will destroy the repository
+
+--------------------------------------------------
+
+terraform destroy
+
+if we want to delete only 1 instance only but not all
+
+terraform destroy --target github_repository.first_repo
+
+so it will delete only first repo
+
+terraform plan is run before apply because it will tell the outcome of what it has possible outcomes.
+
+-------------------------------------------------
+
+terraform validate command
+
+we can also put token in tfvar file and then can use that token in main code.
+
+terraform validate command checks that if configuration which u have made is true or wrong. 
+
+-----------------------------------------------------
+
+terraform refresh
+
+**never do any manual modifications in tfstate file
+
+now if I change anything in Github but tfstate wont able to know, so we have cmd terraform refresh.
+
+terraform plan is best practice. 
+
+terraform plan will show the modifications which were done in gihub too.
+
+from providers page we can see description is optional so if we remove github description so it will remove description from github too.
+
+-------------------------------------------
+-------------------------------------------
+
+terraform output
+
+if u want to print the url of the github repo then we customise the output 
+
+by output "first_repo" {
+value = github_repository.first_repo.html_url
+
+
+write this code snippet in same code
+then terraform apply then terraform tsstate file will be updated.
+
+--------------------------------------------
+
+Terraform Console:
+
+if you just make terraform console command then u enter into a new console and their u can print and get any variable info for example: var.username so it will give the variable informtion and for exiting the terminal u can make "exit" command.
+
+----------------------------------------------
+
+terraform fmt:
+
+if there are indentation issues in a file so just make terraform fmt so it will automatically indent and structure it.
+
+
+------------------------------------------------
+
+
+Create first resource manual steps:
+
+In AWS, we search EC2 and try to launch an instance( making virtual machine on cloud), then we search the server (ubuntu,RHEL etc etc) and we note the AMI id of that image and AMI ID vary according to regions.
+
+then we configure all the details ( subnet, IP, storage etc etc) and then review and launch and we can downlaod the key and launch instance and u can now see running instances.
+
+
+then to access this machine we click on connect and then we ssh that machine or we have command there in aws mentioned.
+
+then we go to our terminal and run that command and then we are inside that machine with private IP.
+in AWS we will see public IP and in server we see private IP.
+
+
+this machine can now be accessed publicly and host anything
+
+
+these all steps we will automate through terraform now
+
+
+
+--------------------------------
+Creating First Resouce on AWS using Terraform 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  
+
+
+ 	

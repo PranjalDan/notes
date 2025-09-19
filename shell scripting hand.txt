@@ -1,0 +1,231 @@
+Shell Scripting notes:
+
+-- what is shell?
+shell provide an environment to a user to run commands and interact with kernal.
+
+Different types of shell:
+bash, sh, ksh, tsh, tsh, fish, zsh
+
+bash is very common and used so many people instead shell scripting uses bash scripting word.
+
+zsh - z shell is basically for mac
+
+-----------
+waht is my shell type - 
+echo $0
+
+to check os version - /etc/os-release
+----
+
+what is shell scripting:
+conists of set of commands to perform the tasks, and simply execute a file like command and all commands inside file get execute in once. automation of tasks can be done by shell scripting.
+
+----
+First basic script: #! is called as she bang
+
+#!/bin/bash
+
+echo "Hello World"
+
+once script is written give tht script execute permission
+
+--
+Shebang - #!/bin/bash
+echo - used to send output to terminal.
+
+---
+how to run a script --
+give permissions first and check ls -ltr
+then ./script_name.sh or bash script_name.sh ( used to run without permission). ####
+
+or u may also run like /path to script/script_name.sh
+
+------
+Comments -- #(single line comment)
+
+multi line comment 
+...
+comment 
+...
+
+------------------
+
+how to use variables:-
+
+#!
+
+a=10
+name="Pranjal"
+age=28
+
+echo "my name is $a and $name with age as $age."
+
+----
+we can store output of any command in a variable:
+
+#!
+HOSTNAME=$(hostname)
+echo "name of machine is $HOSTNAME.
+
+so it will give machine name when run.
+
+---
+Constant variable:
+Once you defined a variable and dont wanna change it until the end of the script.
+
+readonly var_name="Hi"
+
+simply write readonly in front of variable
+
+readonly COLLEGE="DU"
+
+echo "college is $college
+
+COLLEGE="efe"
+
+echo "college is $college"
+
+so it wont be changed
+
+
+---
+
+Arrays - we can store multiple values in a variable and retreive by index numbers. First value is always started from 0
+
+How to define an array?
+
+myarray=( 1 2 Hello "hey man")
+
+how to get values form an array?
+
+echo "${myArray[0]}"
+echo "${myArray[1]}"
+
+#!/bin/bash
+
+#Array
+
+myarray=( 1  20 30.5 Hello "Hey buddy!")  --- 1 is at index 0 , 20 at 1, hello at 3
+
+echo "${myArray[3]}"
+
+-->it'll print "hEllo"
+
+#how to find no. of values in an array
+echo"value is ${#myArray[*]} ---- use # and *
+
+------
+
+How to update an array
+
+myarray+=( 5 6 8 )
+
+#updating a array with new values:
+
+myArray+=(New 30 40)
+
+echo "values of new array are ${myArray[*]}"
+
+---
+array key value pair:
+
+myarray= ( [name]=Pranjal [age]=20)
+echo "${myarray[name]}"
+
+#!
+declare -A myarray
+myarray=( [name]=Pranjal [age]=20 [city]=pataudi )
+
+echo "Name is ${myarray[name]} and age is ${myarray[age]}"
+
+
+in indexing numbering count is hard but this is damn easy as its bais on words.
+
+-----
+String Operations:
+
+myVar="hello pranjal, how are you"
+length=${#myvar}    ---- # used for length
+
+echo "Upper case is ${myvar^^}"   ----- it makes everything in caps
+echo "lower case is ${myvar,,}"   ------ it makes everything in lower case.
+#To replace a string
+replace=${myVar/pranjal/paul} --- first word which you want to replace and second word is with which you want to replace.
+echo"New var is $replace"
+
+# slice - if I want a particular lenght from string
+
+echo "After slice ${myvar:4:5}"
+
+----
+User interaction
+
+#! 
+read name
+read age
+echo "your name is $name and age is $age"
+
+if you want to write any message before read command so use -p after read command.
+
+read -p "what is your name?" name
+echo "your name is $name"
+
+----
+Arthematic operations.
+Using let command
+
+#!
+a=2
+b=3
+let mult=$a*$b
+echo $mult
+
+so it'll give 6.
+let tells that its a mathematical operation not a string.
+
+also 
+let sum=$a+$bais
+echo $sum
+
+
+also one more way
+
+echo "substraction is $(( $a - $b ))"   --- so these double braces and $ also follows same and we dont need let here.
+
+----------------
+Conditional Statements.
+IF-ELSE
+
+
+read -p "Enter your marks:" marks
+if [ $marks -gt 40 ] 
+then 
+echo "you are pass"
+else
+echo "FAIL"
+fi
+
+---
+Operators:
+equal -eq
+Greater than or equal to - -get
+less than or equal to -le
+not equal -ne
+greater than -gt
+less than -ltr
+
+--
+
+
+
+
+
+
+
+
+
+
+
+
+
+

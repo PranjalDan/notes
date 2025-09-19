@@ -1,0 +1,600 @@
+Terraform – Complete Tutorial (Refined Notes)
+1️ What is Terraform?
+
+Terraform is an open-source Infrastructure-as-Code (IaC) tool that allows you to define and provision infrastructure automatically. 
+Instead of creating servers, databases, networks, or storage manually from a cloud console, you describe them in code and Terraform does the rest.
+
+Why Terraform?
+
+Consistent infrastructure (no manual mistakes).
+Version-controlled infrastructure (like application code).
+Works across multiple cloud providers (AWS, Azure, GCP, etc.).
+Automates the creation, modification, and destruction of infrastructure.
+
+
+
+2️⃣ Terraform vs CloudFormation
+
+CloudFormation: AWS-native tool to define and manage AWS resources only.
+Terraform: Cloud-agnostic. You can use it to create resources on AWS, Azure, GCP, VMware, Kubernetes, and many other providers.
+AKM
+
+
+
+Example resources:
+
+Cloud	Compute	Storage	Kubernetes Service
+AWS	EC2 Instance	S3 Bucket	EKS (Elastic Kubernetes Service)
+Azure	Virtual Machine (VM)	Azure Storage	AKS (Azure Kubernetes Service)
+Google Cloud	Compute Engine	Cloud Storage	GKE (Google Kubernetes Engine)
+
+Terraform can create all of these from one common workflow.
+
+3️⃣ Installing Terraform
+
+You can install Terraform by downloading the binary for your OS (Windows, Linux, Mac) from terraform.io
+ or using a package manager (chocolatey, brew, apt, yum).
+Example for Linux:
+sudo yum install -y terraform
+
+4️⃣ HashiCorp Configuration Language (HCL)
+
+Terraform uses HCL (HashiCorp Configuration Language), which is human-readable and declarative. You describe what you want (not how to do it).
+
+General Syntax:
+
+<block_type> <label(s)> {
+  argument_name = value
+  argument_name = value
+}
+
+
+Block: A major component like resource, variable, output, provider.
+
+Labels/Parameters: Identify the type of block (e.g., aws_instance), and its name.
+
+Arguments: Inside the { } – specific settings or attributes for that resource.
+
+Example:
+
+resource "aws_instance" "my_server" {
+  ami           = "ami-123456"
+  instance_type = "t2.micro"
+}
+
+
+Here:
+
+resource = block
+
+"aws_instance" = resource type (parameter)
+
+"my_server" = resource name/identifier
+
+ami and instance_type = arguments
+
+
+
+5️⃣ Terraform Workflow
+
+Terraform always follows a four-step workflow:
+
+Write: Create a .tf file (commonly main.tf) describing your infrastructure.
+Initialize: Run terraform init to download provider plugins (AWS, Azure, etc.).
+Validate: Run terraform validate to check for syntax errors.
+Plan: Run terraform plan to preview what Terraform will do (dry-run).
+Apply: Run terraform apply to actually create/update the infrastructure.
+Destroy: Run terraform destroy to delete the resources created.
+
+6️ Example: Local File Resource
+resource "local_file" "my_file" {
+  filename = "automate.txt"
+  content  = "This file is created by Terraform"
+}
+
+
+Explanation:
+
+local_file: A resource type from the local provider (used to manage files on your local machine).
+"my_file": Resource name or identifier (you can reference it elsewhere).
+filename and content: Arguments telling Terraform where and what to create.
+
+You can think of it as:
+
+Block = resource
+
+Parameter (resource type) = local_file
+
+Identifier (resource name) = my_file
+
+Arguments = filename & content
+
+7️⃣ Putting It All Together
+
+Terraform = tool
+
+HCL = language
+
+Providers = plugins to manage specific services (AWS, Azure, GCP, local, Kubernetes)
+
+Workflow = init → validate → plan → apply → destroy
+
+
+
+
+Creating an AWS S3 Bucket with Terraform
+
+Terraform uses providers to communicate with cloud services. For AWS, the provider is "aws".
+You must initialize the provider before you can create AWS resources:
+
+terraform init
+
+
+This downloads the AWS plugin locally.
+
+You also need AWS credentials on your machine. The simplest way:
+
+aws configure
+
+
+Enter your AWS Access Key, Secret Key, region, and output format.
+(These credentials are used by Terraform to make AWS API calls.)
+
+S3 Bucket Example
+resource "aws_s3_bucket" "my_bucket" {
+  bucket = "pranjal-ki-bucket"   # bucket name
+}
+
+
+Block = resource
+Resource type = aws_s3_bucket (AWS S3 bucket resource)
+Name = my_bucket (internal identifier used in Terraform)
+Argument = bucket (actual bucket name in AWS)
+To specify AWS region, create provider.tf:
+
+provider "aws" {
+  region = "us-east-2"
+}
+
+
+Then run:
+
+terraform plan
+terraform apply
+
+9️⃣ EC2 Instance Prerequisites
+
+To create an EC2 instance, you need:
+
+Key Pair for SSH login.
+
+VPC (Virtual Private Cloud).
+
+Security Group to define inbound/outbound rules.
+
+Step 1: Generate a Key Pair
+
+On your local machine:
+
+ssh-keygen -t rsa -f terra-key-ec2
+
+
+This creates:
+
+terra-key-ec2 (private key)
+terra-key-ec2.pub (public key)
+Terraform code for key pair:
+
+resource "aws_key_pair" "my_key" {
+  key_name   = "terra-key-ec2"
+  public_key = file("terra-key-ec2.pub") # function reads the file directly
+}
+
+Step 2: Default VPC
+resource "aws_default_vpc" "default" {
+}
+
+
+This ensures there’s at least one default VPC to attach resources to.
+
+Step 3: Security Group
+
+A Security Group acts like a virtual firewall controlling inbound and outbound traffic.
+
+resource "aws_security_group" "my_security_group" {
+  name        = "automate-sg"
+  description = "TF generated security group"
+  vpc_id      = aws_default_vpc.default.id  # interpolation
+
+  # Inbound Rules
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]  # allow SSH from anywhere
+  }
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]  # allow HTTP
+  }
+
+  # Outbound Rules
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"           # all protocols
+    cidr_blocks = ["0.0.0.0/0"]  # allow all outbound
+    description = "all access open"
+  }
+
+  tags = {
+    Name = "allow_tls"
+  }
+}
+
+
+🔹 Ingress = inbound (incoming) rules.
+🔹 Egress = outbound (outgoing) rules.
+
+About Interpolation
+
+Interpolation means referencing one resource’s attribute in another resource using ${ } or directly resource.attribute.
+Example:
+vpc_id = aws_default_vpc.default.id
+This tells Terraform “use the id from the default VPC resource we created above.”
+
+Step 4: EC2 Instance
+resource "aws_instance" "my_instance" {
+  key_name        = aws_key_pair.my_key.key_name
+  security_groups = [aws_security_group.my_security_group.name]
+  instance_type   = "t2.micro"
+  ami             = "ami-xxxxxxxx" # Ubuntu AMI ID
+
+  root_block_device {
+    volume_size = 15
+    volume_type = "gp3"
+  }
+
+  tags = {
+    Name = "Pranjal EC2 instance"
+  }
+}
+
+
+Then run:
+
+terraform init
+terraform validate
+terraform plan
+terraform apply
+
+
+You can now SSH into your instance using the private key:
+
+ssh -i terra-key-ec2 ubuntu@<public_ip>
+
+
+💡 Make sure your IAM user has admin permissions to create resources.
+
+🔟 Using Variables
+
+Instead of hardcoding values in main.tf, you can declare variables in variables.tf:
+
+variable "ec2_instance_type" {
+  default = "t2.micro"
+  type    = string
+}
+
+
+Then reference it in your resource:
+
+instance_type = var.ec2_instance_type
+
+
+This makes your code reusable and easier to maintain.
+
+Summary of Flow
+
+Configure AWS credentials locally (aws configure).
+Create provider.tf (region).
+Create main.tf with resources (S3, EC2, etc.).
+Initialize Terraform (terraform init).
+Validate, Plan, Apply.
+Use variables for flexibility.
+
+
+
+
+11️⃣ Terraform Outputs
+
+After Terraform creates a resource, you often want to see or reuse some of its attributes (like an EC2 public IP or S3 bucket name).
+Terraform provides the output block for this purpose.
+
+Create a separate outputs.tf file:
+
+output "ec2_public_ip" {
+  value = aws_instance.my_instance.public_ip
+}
+
+
+After terraform apply, Terraform will display this value.
+You can also reference it from other modules.
+
+12️⃣ Running Scripts on EC2 at Launch (User Data)
+
+If you want to install software (like Nginx) on your EC2 instance automatically when it boots:
+
+Create a shell script locally (e.g. install_nginx.sh):
+
+#!/bin/bash
+sudo apt update
+sudo apt install -y nginx
+
+
+In your aws_instance resource, add:
+
+user_data = file("install_nginx.sh")
+
+
+This script will run at instance startup.
+
+13️⃣ Creating Multiple Resources
+
+Sometimes you need multiple instances. Terraform gives you two ways:
+
+(a) Copy-Paste – not efficient
+
+Duplicate the block and change the name.
+
+(b) count Meta-Argument – simple scaling
+resource "aws_instance" "my_instance" {
+  count             = 2  # creates 2 instances
+  key_name          = aws_key_pair.my_key.key_name
+  security_groups   = [aws_security_group.my_security_group.name]
+  instance_type     = "t2.micro"
+  ami               = "ami-xxxxxxx"
+
+  root_block_device {
+    volume_size = 15
+    volume_type = "gp3"
+  }
+
+  tags = {
+    Name = "Pranjal EC2 instance"
+  }
+}
+
+
+With count, all instances share the same configuration and name pattern.
+
+Output for Multiple Instances:
+
+output "ec2_public_ip" {
+  value = aws_instance.my_instance[*].public_ip
+}
+
+
+[*] = splat expression. It collects an attribute from multiple resources into a list.
+
+(c) for_each Meta-Argument – different configurations
+
+for_each lets you create multiple resources with different names and types based on a map.
+
+resource "aws_instance" "my_instance" {
+  for_each = tomap({
+    "TWS-Junoon-automate-micro" = "t2.micro"
+    "Pranjal-2"                 = "t2.medium"
+  })
+
+  key_name        = aws_key_pair.my_key.key_name
+  security_groups = [aws_security_group.my_security_group.name]
+  instance_type   = each.value   # instance type from the map
+  ami             = "ami-xxxxxxx"
+
+  root_block_device {
+    volume_size = 15
+    volume_type = "gp3"
+  }
+
+  tags = {
+    Name = each.key    # instance name from the map
+  }
+}
+
+
+each.key = the map key (used as the Name tag).
+
+each.value = the map value (used as instance type).
+
+Output for for_each:
+
+output "ec2_public_ip" {
+  value = [for instance in aws_instance.my_instance : instance.public_ip]
+}
+
+
+This loops through each created instance and outputs a list of public IPs.
+
+Key difference:
+
+count = same configuration, sequential names.
+
+for_each = flexible configuration, custom names.
+
+14️⃣ depends_on Meta-Argument
+
+Sometimes you need to ensure that one resource is created only after another resource is ready.
+Terraform usually figures this out automatically, but for edge cases you can force dependencies:
+
+resource "aws_instance" "my_instance" {
+  for_each = tomap({
+    "TWS-Junoon-automate-micro" = "t2.micro"
+    "Pranjal-2"                 = "t2.medium"
+  })
+
+  depends_on = [
+    aws_security_group.my_security_group,
+    aws_key_pair.my_key
+  ]
+
+  key_name        = aws_key_pair.my_key.key_name
+  security_groups = [aws_security_group.my_security_group.name]
+  instance_type   = each.value
+  ami             = "ami-xxxxxxx"
+
+  root_block_device {
+    volume_size = 15
+    volume_type = "gp3"
+  }
+
+  tags = {
+    Name = each.key
+  }
+}
+
+
+This ensures the security group and key pair exist before creating the instance.
+
+15️⃣ Conditional Expressions (Like if-else)
+
+Terraform supports ternary operators for conditions:
+
+root_block_device {
+  volume_size = var.env == "prd" ? 20 : var.default_root_storage_size
+  volume_type = "gp3"
+}
+
+
+Meaning:
+
+If var.env is "prd", then volume_size = 20.
+
+Else, volume_size = var.default_root_storage_size.
+
+This allows environment-specific configurations in one file.
+
+Quick Summary Table
+Feature	Purpose	Syntax
+output block	Display attributes of resources	output "name" { value = ... }
+user_data	Run script at instance launch	user_data = file("script.sh")
+count	Create multiple identical resources	count = n
+for_each	Create multiple resources with different configs	for_each = tomap({...})
+depends_on	Force resource creation order	depends_on = [res1, res2]
+Ternary condition	Conditional values	condition ? value_if_true : value_if_false
+
+
+
+
+
+
+6️⃣ Terraform State
+
+Terraform keeps track of all resources it manages in a file called the state file (terraform.tfstate).
+This file contains:
+
+What resources were created.
+
+Their current configuration and attributes.
+
+Dependencies between resources.
+
+When you run terraform plan or apply, Terraform compares your .tf code with the state file to decide what changes are needed.
+
+16.1 State Drift
+
+If you make changes to resources outside Terraform (e.g. stop an EC2 instance in AWS console), Terraform’s state file may become outdated.
+This mismatch is called drift.
+
+You can refresh state to detect changes:
+
+terraform refresh
+
+
+This updates the local state file with the real-world status.
+
+16.2 Viewing State
+
+List all tracked resources:
+
+terraform state list
+
+
+View details of one resource:
+
+terraform state show aws_key_pair.my_key
+
+
+This prints the attributes stored in the state file.
+
+16.3 Removing a Resource from State
+
+Sometimes you want Terraform to stop tracking a resource but not delete it. Use:
+
+terraform state rm aws_key_pair.my_key
+
+
+The key pair stays in AWS, but Terraform no longer manages it.
+
+16.4 Importing Existing Resources
+
+If a resource exists in AWS but is not managed by Terraform, you can import it into the state.
+
+Steps:
+
+Write a skeleton resource block in .tf with unknown values:
+
+resource "aws_instance" "my_instance_new" {
+  ami           = "unknown"
+  instance_type = "unknown"
+}
+
+
+Run the import command with the real AWS ID:
+
+terraform import aws_instance.my_instance_new i-1234567890abcdef
+
+
+Show the imported state:
+
+terraform state show aws_instance.my_instance_new
+
+
+Terraform now knows about the resource and you can update its .tf code with actual attributes.
+
+16.5 Secure State Management
+
+Never commit terraform.tfstate to public Git repositories.
+It can contain sensitive data (passwords, keys).
+
+State file loss:
+If the state file is deleted, Terraform no longer knows what resources exist.
+Running terraform destroy or apply after that may recreate or delete infrastructure incorrectly.
+
+Best practice:
+Store state in a remote backend (like AWS S3 with DynamoDB locking, Terraform Cloud, etc.).
+This:
+
+Protects the state file from loss.
+
+Enables team collaboration.
+
+Handles state file locking to prevent two people from applying at the same time (avoiding state conflicts).
+
+16.6 State Locking
+
+State locking ensures that only one operation can modify the state at a time.
+For example, if two engineers run terraform apply simultaneously on the same state, one will be locked until the other finishes.
+Backends like S3 + DynamoDB or Terraform Cloud provide automatic locking and release.
+
+Quick Command Reference
+Command	Purpose
+terraform refresh	Update state with real-world resources
+terraform state list	List all resources tracked by state
+terraform state show <resource>	Show attributes of a resource in state
+terraform state rm <resource>	Remove resource from state (but not from cloud)
+terraform import <resource> <id>	Import existing resource into Terraform state
+
+This covers all major state operations: view, refresh, remove, import, and secure handling.

@@ -1,0 +1,215 @@
+Python notes
+---------------------------
+
+read how to install python newest version in linux.
+
+for downloading python go directly to python.org and simply install it and open any command line or vs code, doesnt require in linux
+
+----
+hello.py
+
+print("Hello world")
+
+to run the file python hello.py
+
+-------------
+#variable 
+name = input("Enter your name")
+print("hello",name)
+
+or simple 
+name = "pranjal"
+print("Hello",name)
+
+
+
+num1 = int(input(first number))  ---- dont give without int else it;ll take like string and merge them
+num2 = int(input(second number))
+sum = num1 + num2
+print(sum)
+
+type casting -- conversion of one data type to another.
+
+------------
+
+subration 
+diff = num1 - num2
+product - *
+division /
+-----
+
+
+conditionals.py
+
+day_of_week = input("Enter the day of week").lower() --- convert in lower case
+print(day_of _week)
+
+if day_of_week == "saturday" or day_of_week == "sunday"
+  print("This")
+else
+  print("I will practive devops")
+
+--------
+choice = input(+,-,*,/)
+
+if choice == "+":
+   print("addition")
+elif choice == "-"
+   print ("subtraction")
+
+so on...........
+
+at last else invalid choice
+
+
+----------------------
+store data in python
+list is a data strcuture where u can have multiple values in it unlike variable and  it stores all type of values and data-types
+array is ds where we can have multiple values of same type
+
+list_of_cloud = ["aws",azure","gcp","digital ocean"]
+cloud = "aws"
+
+print(list_of_cloud)
+
+# add a new cloud 
+
+list_of_cloud.append("IBM")
+
+print(list_of_cloud)
+
+---> append adds to the end of list
+
+list_of_cloud.insert(2,"Orcle")  --- here in second position of list, it'll insert oracle
+
+-----
+#iteration of a list
+for cloud in list_of_cloud
+   print(cloud)
+
+for i in range(0,10):
+print(i)
+
+-------
+os level stuff
+
+utils.py
+
+import os      ------- library ko import ya leke aana hai code m
+print(os.system('df -h'))      ---- checking the disk space
+print(os.system('uptime'))            -- cpu
+print(os.system('free -h'))         --- RAM
+
+-------------
+
+functions
+learn functions from chatgpt
+def check_cpu(co)
+    print(os.system('df -h')) 
+
+
+---------
+import datetime
+
+def show_date():
+  return datetime.datetime.today()   --- return is same as print
+
+
+today = show_date()
+
+print(show_date)
+
+
+----------------------------
+
+
+Automate backups using python:
+
+1. compress 
+2. copy
+
+backup.py
+
+import shutil
+import datetime
+
+
+def backup_files(source, destination):
+        today = datetime.date.today()
+	backup_file_name = os.path.join(destination f"backup{today}.tar.gz")
+	shutil.make_archive(backup_file_name,'gztar')
+	
+source = "/path/of/soruce/file
+destination = "path to desti"
+
+backup_files()
+-----------------------------
+
+s3_bakup 
+
+# this is a script to take a backup from local to AWS S3
+#boto3 is a library used to do AWS tasks using py
+
+
+import boto3
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

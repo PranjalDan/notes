@@ -1,0 +1,29 @@
+	Targets:
+	
+1. Terraform
+2. Docker  ----
+3. Kubernetes 
+4. Ansible ---
+5. Shell 
+6. Linux admin --- 
+7. Powershell 
+8. VMware
+9. VRA/VRO
+10. monitoring tools
+11. GIT ----
+
+
+Revision:
+
+	Targets:
+	
+1. Terraform
+2. Docker 
+3. Kubernetes
+4. Ansible
+5. Shell 
+6. Linux admin 
+7. Powershell
+8. VMware
+9. VRA/VRO
+10. monitoring tools

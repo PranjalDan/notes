@@ -1,0 +1,134 @@
+🟢 Easy (20 Questions)
+These are basic questions focused on syntax, usage, and beginner-level understanding.
+
+What is a shell?
+
+Name a few commonly used shells in Linux.
+
+How do you check your current shell type?
+
+How do you make a script executable?
+
+What is a shebang (#!) and why is it used?
+
+How do you print text in shell scripting?
+
+How do you assign a value to a variable in shell?
+
+What is the correct syntax to access the value of a variable?
+
+How do you make a variable read-only?
+
+What is the output of echo ${#var} when var="hello"?
+
+How can you read input from the user in shell?
+
+What is the difference between echo and read commands?
+
+What is the use of double quotes in variables?
+
+How do you run a script located at a specific path?
+
+What are the different ways to do arithmetic in a script?
+
+What does let command do in shell scripting?
+
+What is an array? How do you declare it?
+
+How do you access a specific index in an array?
+
+How do you get the length of an array?
+
+What are single-line comments in shell?
+
+
+
+
+🟡 Medium (25 Questions)
+These require a slightly deeper understanding of shell scripting logic and flow control.
+
+How do you perform conditional operations in shell scripting?
+
+What is the difference between = and == in [ ] conditions?
+
+What does -eq, -ne, -gt, -lt mean?
+
+What is the use of elif in shell scripting?
+
+How is case used in place of multiple if-else statements?
+
+How do you use logical AND and OR in a condition?
+
+What is the syntax of a for loop in shell scripting?
+
+How do you iterate through values from 1 to 10 in a for loop?
+
+How do you loop through the contents of a file line by line?
+
+How do you use while loop and when do you use it?
+
+What is the difference between while and until loops?
+
+How do you implement an infinite loop in a script?
+
+How do you append values to an existing array?
+
+What is the use of associative arrays in bash?
+
+How do you declare and use associative arrays?
+
+What is ${var^^} and ${var,,} used for?
+
+How do you replace a string in another string using shell?
+
+What is the output of ${var:3:4} if var="ShellScript"?
+
+How do you pass arguments to a function?
+
+How do you define and call a function in shell?
+
+Can you use loops inside functions?
+
+Can you return values from a function in shell scripting?
+
+What is the use of $(command) in variable assignment?
+
+Explain how you read a .csv file using while and IFS.
+
+What is the use of sleep in shell scripts?
+
+
+
+
+🔴 Hard (15 Questions)
+These are scenario-based or test your deeper understanding.
+
+Write a script to check if a number is even or odd.
+
+Write a script to print all prime numbers between 1 and 20.
+
+Write a function that checks if a string is a palindrome.
+
+How do you handle file reading errors in your script?
+
+Write a script to count the number of lines in a file.
+
+How do you sort values stored in an array in shell?
+
+How would you find duplicate lines in a file using a script?
+
+Write a script that reads from a file and adds line numbers to each line.
+
+Write a script to print Fibonacci series using a loop.
+
+How would you pass dynamic user input to a function and validate it?
+
+Write a script to create a backup of a file with the current timestamp.
+
+How do you differentiate between global and local variables in shell?
+
+Write a script to compare two strings and print which one is greater.
+
+How do you make your script modular and reusable?
+
+Explain a real-world example where you used shell scripting in automation.

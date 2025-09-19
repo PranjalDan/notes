@@ -1,0 +1,508 @@
+What is Cloud Computing?
+
+Cloud computing is essentially renting computing resources over the internet instead of buying physical hardware. 
+Instead of investing in servers, storage, and networking equipment, 
+you consume them as a service and pay for what you use.
+
+Cloud Service Models
+
+IaaS (Infrastructure as a Service)
+Provides full control over infrastructure like virtual machines, storage, and networking.
+Responsibilities: You manage OS updates, patches, backups, and security configurations.
+Payment model: Pay-per-use.
+Examples: AWS EC2, Azure Virtual Machines, Google Compute Engine (GCE).
+Use case: Suitable when you need complete control over your environment and want to run custom software.
+
+
+
+PaaS (Platform as a Service)
+Provides a runtime environment and development tools for deploying applications.
+Responsibilities: Azure manages underlying infrastructure, OS, and automated tasks like backups.
+Payment model: Pay-per-service usage.
+Examples: Azure App Service, Azure Functions, Google App Engine.
+Use case: Ideal for developers who want to focus only on application code, without worrying about server maintenance.
+
+
+
+SaaS (Software as a Service)
+Provides ready-to-use applications for end users.
+Responsibilities: The cloud provider manages everything: infrastructure, updates, security, and backups.
+Payment model: Subscription-based.
+Examples: Microsoft 365, Salesforce, Dropbox.
+Use case: End users access apps via the internet; no installation or maintenance required.
+
+
+Shared Responsibility Model
+
+Important in cloud security.
+Cloud provider: Responsible for the security of the cloud (physical infrastructure, host OS, networking).
+User: Responsible for security in the cloud (applications, data, user access, encryption).
+
+
+Cloud Deployment Models
+
+Public Cloud
+Resources are shared among multiple users.
+Users pay only for the resources they consume.
+Examples: AWS, Azure, GCP.
+
+Private Cloud
+
+Resources are dedicated to a single organization.
+High security and customization.
+Often hosted in a private data center or dedicated environment.
+
+Hybrid Cloud
+
+Combination of public and private clouds interconnected.
+Allows workload flexibility and better resource optimization.
+
+
+Key Features of Public Cloud
+
+High Availability & Fault Tolerance: Systems remain operational even if some components fail 
+(often achieved using load balancers and redundancy).
+
+Scalability: Ability to adjust resources according to demand.
+
+Vertical scaling: Increase capacity of existing resources (e.g., bigger VM).
+
+Horizontal scaling: Add more resources of the same type (e.g., multiple VMs).
+
+Elasticity: Automatic scaling up or down based on real-time demand.
+
+Cost-effectiveness: Pay only for what you use; no upfront investment in hardware.
+
+
+
+Azure Resource Hierarchy
+
+Azure Account → required to start using Azure services.
+Subscription → Billing entity; one account can have multiple subscriptions.
+Resource Groups → Logical container to group related resources for management, access control, and billing.
+Important: One resource can belong to only one resource group.
+Resources → Actual services you create (VMs, Storage, Databases, etc.)
+
+
+
+-------------------------------
+
+Azure Cloud Shell
+
+What it is: A browser-based command-line environment provided by Microsoft Azure.
+Purpose: Lets you manage Azure resources without installing Azure CLI or PowerShell on your machine.
+
+
+Features:
+
+Accessible directly from the Azure Portal (click the “Cloud Shell” icon at the top).
+Supports Bash (Linux-style commands) and PowerShell (Windows-style commands).
+Comes preloaded with Azure CLI, PowerShell modules, Git, text editors, etc.
+Persistent storage (5 GB) in an automatically created Azure File Share.
+Think of Cloud Shell as a ready-to-use terminal in the cloud.
+
+
+
+Creating a Virtual Machine (VM) in Azure
+
+Steps (via Portal):
+
+Search “Virtual Machines” in the Azure Portal and click Create.
+Create/Select Resource Group (a logical container to hold your VM and related resources).
+Basics tab – main fields:
+Virtual machine name.
+Region (choose nearest to users).
+Availability options (Single zone / Availability Zone / Availability Set).
+Image (the OS, e.g., Ubuntu 22.04 LTS, Windows Server).
+Size (CPU + RAM combination; pricing depends on size).
+Authentication type:
+SSH public key (recommended for Linux)
+or Password
+Inbound ports:
+For Linux VM: allow port 22 (SSH)
+For Windows VM: allow port 3389 (RDP)
+Disks tab: Choose OS disk type (Standard HDD/SSD, Premium SSD).
+Networking tab: Configure Virtual Network, Subnet, Public IP.
+Management tab: Monitoring, Auto-shutdown, Backups.
+Review + Create.
+
+
+Availability Zone
+Definition: A physically separate datacenter within an Azure region.
+Purpose: To achieve high availability and fault tolerance.
+
+
+If you deploy multiple instances of a resource across different Availability Zones, 
+your app keeps running even if one zone fails.
+
+Each region has at least 3 Availability Zones (when supported).
+
+Key Things Required to Create a VM (Checklist)
+Parameter	Explanation
+Resource Group	Logical container for the VM and related resources.
+VM Name	Friendly name for the VM.
+Region	Geographic location where VM will be hosted.
+Availability Option	Whether you want redundancy (single zone, availability zone, availability set).
+Image (OS)	The operating system to install (Ubuntu, Windows Server, etc.).
+Size	CPU + RAM configuration.
+Authentication Type	SSH key (Linux) or username/password (Windows).
+Inbound Ports	Open required ports (22 for SSH, 3389 for RDP, 80/443 for web).
+Disk Type	OS disk type (SSD or HDD).
+Networking	Virtual network, subnet, public IP, security group.
+Tags (optional)	Metadata for billing or management.
+
+
+VM Scale Set (VMSS)
+
+Definition:
+An Azure VM Scale Set is a service that lets you deploy and manage a group of identical VMs. 
+It automatically scales the number of VMs up or down based on demand or a schedule.
+
+Why it exists:
+Instead of manually creating multiple VMs and configuring load balancing yourself, a VM Scale Set handles it for you. 
+It’s designed for high-scale, stateless workloads like web servers, microservices, or compute clusters.
+
+Key Features:
+
+Automatic Scaling: You can define rules based on CPU, memory, or custom metrics to automatically add/remove VMs.
+Load Balancing Built-In: Works seamlessly with Azure Load Balancer or Application Gateway to distribute traffic.
+Consistent Configuration: All VMs in the set share the same OS image and configuration, ensuring uniformity.
+Fault Domain/Availability Zone Awareness: VMs are automatically spread across fault domains and availability zones for high availability.
+Integration with Azure Autoscale: Easy to configure thresholds for scaling.
+
+Use Cases:
+
+Hosting a high-traffic web application or API.
+Running compute-intensive batch jobs.
+Any scenario where you need to handle varying loads automatically.
+
+Difference vs Single VM:
+
+A single VM: fixed size, manually scaled.
+VM Scale Set: elastic group, automatically scaled, unified management.
+
+
+---------------------------------
+
+VM Scale Sets
+
+A VM Scale Set lets you deploy and manage a group of identical VMs.
+You define a base configuration (image, size, network) once; Azure creates many copies.
+
+Scale-in = automatically reduce the number of VMs when demand drops.
+Scale-out = automatically add more VMs when demand increases.
+Scaling can be manual (you set instance count yourself) or automatic (based on CPU, memory, custom metrics, or schedule).
+Works well with Azure Load Balancer or Application Gateway to distribute traffic.
+
+Steps in Portal (like creating a VM):
+
+In Azure Portal, search “Virtual Machine Scale Sets”.
+Click Create.
+Basics: Select subscription, resource group, name, region.
+Image: Choose OS (Windows/Linux).
+Instance count: How many VMs to start with.
+Scaling policy: Manual or Auto scale rules.
+Networking: Virtual network, subnet, public IP, load balancer integration.
+Review + Create.
+
+
+
+
+Fault Domain vs Update Domain (important in interviews)
+
+Fault Domain (FD):
+
+Physical separation of underlying hardware (server racks, power, network).
+Protects against hardware failures.
+Azure spreads VMs across different FDs to minimize impact if one rack fails.
+
+Update Domain (UD):
+
+Logical grouping used when Azure applies maintenance or updates.
+Ensures not all VMs are rebooted at once during maintenance.
+VMs in different UDs are updated one at a time for availability.
+
+(Think: FD = hardware isolation; UD = controlled update sequencing.)
+
+Azure Virtual Desktop (AVD)
+A managed virtual desktop infrastructure (VDI) service.
+Lets multiple users securely access Windows desktops and apps from anywhere, on any device.
+Fully managed by Microsoft: brokering, gateways, licensing, scaling handled for you.
+Supports multi-session Windows 10/11 (one VM can serve multiple concurrent users).
+Integrates with Azure Active Directory and Microsoft 365.
+
+Difference: Azure Virtual Desktop vs. Regular Azure VM
+Feature	Azure Virtual Desktop (AVD)	Regular Azure VM
+Purpose	Deliver desktops/apps to multiple users (VDI)	Single-tenant server or desktop VM for one workload/user
+Management	Microsoft manages infrastructure, brokering, scaling	You manage the VM entirely
+User Sessions	Multi-user (Windows 10/11 multi-session)	Typically one user per VM
+Licensing	Included with Microsoft 365/Windows licenses	Separate Windows Server/OS licenses
+Scaling	Built-in autoscaling host pools	Manual or VM Scale Set
+Use Case	Remote workforce, app streaming, call centers	Running a server, hosting apps, dev/test
+
+----------------------------------------
+
+1. Virtualization
+
+Definition: Virtualization is the technology that allows multiple operating systems to run on a single physical machine.
+How it works: A hypervisor sits between the hardware and the virtual machines (VMs). It allocates CPU, memory, storage, and network resources to each VM.
+
+
+Benefits:
+
+Better hardware utilization.
+Isolated environments for testing, development, or production.
+Easy migration and backup of VMs.
+Cost-effective, since fewer physical machines are needed.
+
+2. Virtual Machine (VM)
+
+A virtual machine is a software-based simulation of a physical computer.
+Characteristics:
+
+Runs its own operating system (guest OS).
+Fully isolated; behaves like a real computer.
+Can run any application like a physical machine.
+
+Use cases:
+
+Running a Windows or Linux server.
+Hosting enterprise applications.
+Creating isolated development or testing environments.
+
+3. Containers
+
+Containers are lightweight, portable, isolated environments that package an application with all its dependencies.
+Unlike VMs, containers share the host OS kernel but isolate processes and file systems.
+
+Benefits:
+
+Very fast to start.
+Smaller in size compared to VMs.
+Ideal for microservices architecture.
+
+Use cases:
+
+Running web apps in microservices.
+Batch jobs or automated tasks.
+CI/CD pipelines for developers.
+
+4. Azure Container Services
+a) Azure Container Instances (ACI)
+
+Allows you to run containers directly in Azure without managing VMs or orchestrators.
+
+Benefits:
+
+Quick startup of containers.
+Pay per second; no idle costs.
+Linux and Windows container support.
+
+Steps to use ACI:
+
+Search Azure Container Instances in the portal → Click Create.
+Configure: Resource group, container name, image (from Docker Hub or Azure Container Registry), CPU/Memory.
+Set networking, environment variables, and tags.
+Deploy and start container.
+
+Connect to running container:
+
+Use exec command / SSH to access the container shell.
+
+
+b) Azure Container Registry (ACR)
+A private Docker container registry in Azure.
+Purpose: Store, manage, and secure Docker images.
+Integrates with: ACI, AKS, CI/CD pipelines.
+Supports automatic image builds, retention policies, and geo-replication.
+
+
+5. Azure Functions
+Definition: Azure Functions is an event-driven, serverless compute service.
+Serverless: You don’t manage VMs or infrastructure; Azure automatically handles compute.
+Event-driven: Functions are triggered by events such as HTTP requests, queue messages, blob uploads, or timers.
+
+Benefits:
+
+Cost-effective: Pay only for executions, not idle time.
+Scalable: Automatically scales up or down based on events.
+Fast development: Focus only on code, not servers.
+Flexible: Supports multiple languages (C#, Python, Java, Node.js, PowerShell).
+
+Steps to create a function:
+
+Click Create Function App in Azure Portal.
+Select Subscription, Resource Group, Name, Region.
+Choose Runtime Stack (e.g., Python, Node.js) and publish method.
+Plan Type: Serverless (consumption plan) → auto-scale enabled.
+
+Add storage account for logs and triggers.
+Deploy your code and attach triggers (HTTP, Timer, Queue, Blob).
+
+Use cases:
+
+Process uploaded files automatically.
+Run scheduled tasks (cron jobs) with timer triggers.
+Integrate with Azure Logic Apps or Event Grid.
+
+6. Azure App Services
+
+A Platform-as-a-Service (PaaS) offering to build, host, and scale web and mobile apps.
+Microsoft manages the infrastructure, OS updates, scaling, and high availability, letting you focus on code.
+
+Types of App Services
+Type	Description	Use Case
+Web Apps	Host web applications in languages like Python, Java, PHP, .NET, Ruby	Websites, web portals
+API Apps	Host REST-based APIs	Microservices, backend APIs
+Web Jobs	Background jobs that run continuously or on a schedule	Cron jobs, batch processing
+Mobile Apps	Backend services for mobile apps	iOS/Android app backend
+
+
+
+Key Features:
+
+Supports Linux and Windows.
+Scaling: Vertical (bigger instances) or horizontal (more instances).
+High availability with built-in redundancy.
+
+Deployment slots:
+
+Create slots like staging, testing, or production.
+
+Deploy a new version to a slot → swap with production without downtime.
+
+Examples:
+
+Web App → Host a Python/Django website.
+
+API App → Host REST API for your mobile app.
+
+Web Job → Run a nightly database cleanup script.
+
+Mobile App → Backend for Android/iOS app storing data in Azure SQL or Cosmos DB.
+
+7. Difference: Azure Virtual Desktop vs VM
+Feature	Azure Virtual Desktop (AVD)	Regular VM
+Purpose	Multi-user virtual desktops	Single VM for one workload or user
+Management	Managed by Microsoft (infrastructure, scaling, broker)	You manage everything
+User Sessions	Multi-user Windows 10/11 session	Single-user per VM
+Licensing	Part of Microsoft 365 or Windows	Separate OS license
+Scaling	Built-in autoscaling host pools	Manual or via VM Scale Set
+Use Case	Remote workforce, virtual desktop access	Hosting apps, dev/test environments
+
+------------------------------------------------------
+
+
+
+learn azure networking, subnets etc.
+cloud based network, isolation, segmentation, secure, filter.
+
+learn how to create virtual network in azure
+
+
+--------------------------------
+VNET peering
+connects vnets from multiple regions
+over private ip
+traffic remains within microsoft networks
+
+
+
+we have resources deyploed in vnet and also on on-premises network so to communicate between them
+we use VPN
+IPsec S2S VPN tunnel
+P2S VPN channel
+
+learn express route.
+
+partner edge, ms egde
+
+primary circuit, secondary circuit
+
+faster speed, lower latency, higher bandwidth
+---------------------
+
+Azure DNS
+
+buy domain for yealy fees from app service
+Azure DNS can host ur domain
+lets us manage ur dns domain
+
+--------------
+Learn BLOB storage
+massive amount of large unstructed data ( any files ) can be stored into Binary large objects BLOBS
+
+blob storage contains multiple blob containers
+
+backup and restore data
+storing files for distributed access
+stream video and audio
+storing data for analysis on on prem.
+accessed over https etc
+-------------------------------
+Azure file storage
+learn file shares and files.
+instead containers we have file shares.
+accessed by SMB, NFS protocol
+
+enables u to create files shares in cloud and access these file shares from anywhere
+
+SMB model learn
+
+
+-------------------------------
+
+azure queue storage
+asyncornous processing
+
+----------
+
+semi structed data
+storage account learn
+
+-----------
+azure migrate
+azure database migration
+azure data box
+
+------
+azcopy
+azure storage explorer
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

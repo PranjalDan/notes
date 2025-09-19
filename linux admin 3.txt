@@ -1,0 +1,196 @@
+Linux File System Hierarchy
+
+/ (Root): The top-level directory in Linux. Everything starts here.
+/home: User home directories are located here.
+/etc: Configuration files for the system and installed services.
+/var: Variable data, like logs and spool files.
+/usr: User binaries and read-only data.
+/bin and /sbin: Essential user and system binaries.
+/dev: Device files, such as disks and terminals.
+/proc and /sys: Virtual filesystems providing kernel and process information.
+/tmp: Temporary files, cleared on reboot.
+
+
+ls                # List files in the current directory
+ls -l             # Long listing with details
+ls -a             # Include hidden files (those starting with .)
+
+cd /etc           # Go to /etc directory
+cd ..             # Go up one level in the directory tree
+cd ~              # Go to your home directory
+
+less file1.txt                 # View file1.txt one screen at a time
+
+
+
+Permission Basics
+Each file and directory has three types of permissions:
+
+Read (r): Allows viewing the contents of a file or listing a directory’s contents.
+Write (w): Allows modifying the contents of a file or creating/deleting files in a directory.
+Execute (x): Allows running a file as a program/script or accessing a directory.
+Permissions are set for three categories of users:
+
+Owner: The user who owns the file.
+Group: Users in the file's group.
+Others: All other users.
+The permissions are represented as a string of 10 characters:
+
+Example: -rwxr-xr--
+The first character indicates the type (- for a file, d for a directory).
+The next three characters (rwx) represent the owner’s permissions.
+The following three characters (r-x) represent the group’s permissions.
+The last three characters (r--) represent others' permissions.
+
+
+chmod u+x file.txt   # Add execute permission to the owner (user)
+chmod g-w file.txt   # Remove write permission from the group
+chmod o=r file.txt   # Set read-only permission for others
+chmod a+x file.txt   # Add execute permission for everyone (user, group, others)
+
+
+
+Each permission has a numeric value:
+Read = 4
+Write = 2
+Execute = 1
+Combine these values to set permissions:
+Example: chmod 755 file.txt
+Owner: 7 (4+2+1 = read+write+execute)
+Group: 5 (4+1 = read+execute)
+Others: 5 (4+1 = read+execute)
+
+chown user file.txt      # Change the owner to 'user'
+chown user:group file.txt  # Change the owner to 'user' and group to 'group'
+chgrp group file.txt     # Change the group to 'group'
+
+Understanding Processes
+What is a Process?
+A process is a running instance of a program. Each process is assigned a unique Process ID (PID).
+Processes can be in different states (running, sleeping, stopped, etc.) and can have parent and child processes.
+
+Types of Processes
+Foreground Processes: Started by a user and run in the foreground, occupying the terminal until finished.
+Background Processes: Run in the background, allowing the terminal to be used for other tasks.
+Daemon Processes: Background processes not associated with a terminal, often started at boot time (e.g., web servers).
+
+to view what all process are running -
+
+ps, top, htop ( more user friendly )
+
+control process - kill -9 PID 
+
+systemctl: Control the system’s services and units.
+Try pgrep to find processes by name
+Start a process, then use bg and fg to move it between background and foreground.
+
+
+ip a           # Display all IP addresses
+ip addr        # Another way to display IP addresses
+ip link        # Display network interfaces
+ip route       # Display routing tableifconfig       # Display network interface information
+ifconfig eth0 192.168.1.10 netmask 255.255.255.0  # Set IP address manually
+
+Viewing Disk Information
+lsblk: List information about all available or specified block devices.
+lsblk               # Display information about block devices
+lsblk -f            # Display file system information
+
+df: Report file system disk space usage.
+df -h               # Human-readable disk usage information
+df -T               # Show file system type
+fdisk: A utility to manipulate disk partition tables.
+
+du: Estimate file and directory space usage.
+
+
+Partition: A section of a storage device. Think of it as dividing a disk into parts.
+File System: The method used to organize and store files on a partition.
+Mount Point: The directory where you access the contents of a mounted partition or device.
+Mounting: Making the contents of a partition accessible at a mount point.
+Unmounting: Detaching the partition from the mount point, making its contents inaccessible from that directory.
+
+
+
+Insert the USB, find its device name with lsblk.
+Create a mount point with mkdir /mnt/myusb.
+Mount the USB drive with mount /dev/sdb1 /mnt/myusb.
+Access files in /mnt/myusb.
+Unmount with umount /mnt/myusb.
+
+
+A file system is a method used by operating systems to organize and store data on storage devices like hard drives, SSDs, USB drives, etc. It defines how data is structured, stored, and retrieved.
+
+Common File Systems in Linux
+Ext4 (Fourth Extended Filesystem)
+
+Ext4 is the most widely used file system in Linux. It’s reliable, fast, and can handle large files and disks efficiently.
+Use Case: Ext4 is typically used for most general-purpose Linux installations.
+XFS
+
+XFS is a high-performance file system designed for handling large amounts of data. It’s great for servers and systems with heavy data workloads.
+Use Case: Ideal for environments where speed and handling of large files are crucial, like databases and large media files.
+
+
+
+Deleting a User:
+
+Command: sudo userdel username
+Description: Deletes a user account. The -r option can be used to remove the user's home directory as well.
+Example: sudo userdel -r pranjal
+
+
+
+
+Disk management
+------------------------------------------
+
+Add a New Disk:
+
+Physically add a new disk to the system.
+Create a new partition on it (e.g., using fdisk or parted).
+Create Physical Volume on the New Partition:
+
+bash
+Copy code
+pvcreate /dev/sdX1  # Replace /dev/sdX1 with the new partition
+Create a New Volume Group:
+
+bash
+Copy code
+vgcreate new_vg /dev/sdX1
+Create a New Logical Volume:
+
+bash
+Copy code
+lvcreate -n new_lv -L 10G new_vg
+Create Filesystem and Mount:
+
+bash
+Copy code
+mkfs.ext4 /dev/new_vg/new_lv
+mkdir /mnt/new_mount_point
+mount /dev/new_vg/new_lv /mnt/new_mount_point
+Update /etc/fstab as needed.
+
+
+yum update — update packages.
+yum install package — install a package.
+yum remove package — remove a package.
+
+
+service service_name start — start a service.
+service service_name stop — stop a service.
+
+sed: Stream editor for filtering and transforming text.
+sed 's/old/new/g' file — replace all occurrences of "old" with "new" in a file.
+tar: Archive files.
+tar -cvf archive.tar file — create a new archive.
+tar -xvf archive.tar — extract files from an archive.
+
+ssh: Secure Shell for remote login.
+
+ssh user@host — connect to a remote host via SSH.
+
+
+Use tools like tar, rsync, or backup solutions like Bacula or Amanda for performing backups. 

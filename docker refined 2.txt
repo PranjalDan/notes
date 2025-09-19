@@ -1,0 +1,140 @@
+🚢 Docker Overview
+
+What is Docker?
+Docker is a platform that allows developers and system admins to package applications into containers. These containers include the app along with its dependencies and configuration so it runs the same everywhere.
+
+✅ Why Containers?
+
+Self-contained and portable.
+Solve the problem of "it works on my machine".
+Simplify deployment and environment setup.
+Faster and more efficient than traditional VMs.
+
+📦 What Is a Container?
+
+A lightweight package of software with all the dependencies it needs.
+Runs in isolation from other processes on the host OS.
+Can be easily shared and reused.
+
+🗃 Where Are Containers Stored?
+
+Docker Hub (Public Repository)
+Private Repositories
+Container Registries (AWS ECR, GCR, Azure Container Registry)
+
+🧱 Before vs After Containers
+
+Before:
+Manual app installs with different steps on different OSes.
+Dependency/version issues.
+Text-based setup instructions prone to error.
+
+After:
+Standardized environment in a container.
+Only Docker needs to be installed.
+One command to get the app running.
+Can run different versions side-by-side.
+
+🖼 Docker Image vs Container
+
+Docker Image	         Docker Container
+Blueprint / template	  Running instance
+Static	                  Dynamic
+Stored in repo	           Lives in memory/runtime
+Non-editable	           You can interact with it
+
+An image becomes a container when it's run.
+
+🖥 Docker vs Virtual Machines
+Docker	                   Virtual Machine
+Lightweight	              Heavyweight
+Shares host OS	          Has full guest OS
+Faster to start	         Slow boot time
+Uses less resources	     High memory/CPU usage
+
+🔧 Docker Installation Basics
+
+Windows:
+Requires Windows 10+, virtualization enabled.
+Install Docker Desktop or Docker Toolbox for older systems.
+
+Linux:
+Install Docker Engine using official guides.
+Requires 4GB+ RAM and root/sudo access.
+
+🔑 Basic Docker Commands
+Command	Description
+docker pull <image>	Downloads image from repo
+docker run <image>	Creates + starts container
+docker ps	Lists running containers
+docker ps -a	Lists all containers
+docker stop <id>	Stops a container
+docker start <id>	Starts a stopped container
+docker logs <id>	Shows container logs
+docker exec -it <id> /bin/bash	Enters container terminal
+
+Important:
+
+Use -p <host>:<container> to map ports.
+Use -d for detached (background) mode.
+Use --name to name your container.
+
+🔌 Host Port vs Container Port
+When running containers, map internal ports to your system using:
+
+docker run -p 6000:6379 redis
+Here, 6000 is the host port, 6379 is the container port.
+
+🐞 Debugging Containers
+View logs:
+
+docker logs <container_name or id>
+Enter container shell:
+
+docker exec -it <id> /bin/bash
+
+▶️ Difference Between run and start
+docker run	                  docker start
+Pulls image if not present	  Uses existing container
+Creates new container	      Restarts existing one
+
+
+👨‍💻 Demo Use Case
+Example:
+
+App uses MongoDB.
+Use official MongoDB image from Docker Hub.
+Push your app image to DockerHub or private repo.
+Teammates pull and run both MongoDB and app images easily.
+
+🌐 Docker Networks
+Docker automatically creates a default network.
+You can create your own:
+
+docker network create mongo-network
+View networks:
+
+docker network ls
+🧪 Running MongoDB Container
+docker run -p 27017:27017 -d \
+  -e MONGO_INITDB_ROOT_USERNAME=admin \
+  -e MONGO_INITDB_ROOT_PASSWORD=pass \
+  --name mongodb \
+  --net mongo-network \
+  mongo
+🌐 Running Mongo Express (UI for Mongo)
+docker run -d -p 8081:8081 \
+  -e ME_CONFIG_MONGODB_ADMINUSERNAME=admin \
+  -e ME_CONFIG_MONGODB_ADMINPASSWORD=pass \
+  -e ME_CONFIG_MONGODB_SERVER=mongodb \
+  --name mongo-express \
+  --net mongo-network \
+  mongo-express
+  
+  
+  
+🧩 Docker Compose (Coming up next)
+A tool to define and run multi-container Docker apps using a single YAML file (docker-compose.yml).
+
+Helps manage services like databases, frontends, backends in one file.
+

@@ -1,0 +1,70 @@
+Extra Packages for Enterprise Linux (EPEL) repository.
+Ansible Is Agentless - uses OpenSSH or winrm for the connection ( 4895 TCP)
+Each task runs a module, a small piece of code (written in Python, PowerShell, or some other language), with specific arguments.
+Tasks, plays, and playbooks are designed to be idempotent. This means that you can safely run a playbook on the same hosts multiple times.
+Ansible also uses plug-ins. Plug-ins are code that you can add to Ansible to extend it and adapt it to new uses and platforms.
+clients do not need to have an Ansible-specific agent installed on managed hosts, and do not need to permit special network traffic to some nonstandard port.
+
+
+Plugins padhna hai
+
+For ansible python needs to be present on control and managed nodes both for modules to work and for windows it uses WINRM and linux ssh. for windows it 
+should have powershell more than 3.0 atleast to run modules. Ansible also requires at least .NET Framework 4.0 or later to be installed on Windows managed hosts.
+
+
+The ansible package provides a base configuration file located at /etc/ansible/ansible.cfg. This file is used if no other configuration file is found.
+
+Because of the multitude of locations in which Ansible configuration files can be placed, it can be confusing which configuration file is being used by Ansible. You can run the ansible --version command to clearly identify which version of Ansible is installed, and which configuration file is being used.
+
+Table 2.2. Ansible Configuration
+
+Directive	Description
+inventory	Specifies the path to the inventory file.
+remote_user	The name of the user to log in as on the managed hosts. If not specified, the current user's name is used.
+ask_pass	Whether or not to prompt for an SSH password. Can be false if using SSH public key authentication.
+become	Whether to automatically switch user on the managed host (typically to root) after connecting. This can also be specified by a play.
+become_method	How to switch user (typically sudo, which is the default, but su is an option).
+become_user	The user to switch to on the managed host (typically root, which is the default).
+become_ask_pass	Whether to prompt for a password for your become_method. Defaults to false.
+
+ansible -m user -a 'name=newbie uid=4000 state=present' \
+ ansible mymanagedhosts -m command -a /usr/bin/hostname
+ 
+ 
+ansible all -m copy -a "src
+
+The ansible-doc -l command lists all modules installed on a system.
+[user@controlnode ~]$ ansible-doc ping
+> PING    (/usr/lib/python3.6/site-packages/ansible/modules/system/ping.py)
+
+
+Most modules take arguments. You can find the list of arguments available for a module in the module's documentation. Ad hoc commands pass arguments to modules using the -a option. When no argument is needed, omit the -a option from the ad hoc command. If multiple arguments need to be specified, supply them as a quoted space-separated list.
+
+Most modules are idempotent, which means that they can be run safely multiple times, and if the system is already in the correct state, they do nothing. For example, if you run the previous ad hoc command again, it should report no change:
+
+
+-v	The task results are displayed.
+-vv	Both task results and task configuration are displayed
+-vvv	Includes information about connections to managed hosts
+-vvvv	Adds extra verbosity options to the connection plug-ins, including users being used in the managed hosts to execute scripts, and what scripts have been executed
+
+
+Syntax verification - ansible-playbook --syntax-check webserver.yml
+ansible-playbook -C webserver.yml --> Dry run check
+
+If the remote user defined in the Ansible configuration for task execution is not suitable, it can be overridden by using the remote_user keyword within a play.
+
+remote_user: remoteuser
+
+hosts: [servera, serverb, serverc]
+
+ansible vault
+
+Handlers can be considered as inactive tasks that only get triggered when explicitly invoked using a notify statement. 
+Handlers normally run after all other tasks in the play complete. 
+
+META of roles
+
+Ansible templates
+roles init through command line
+

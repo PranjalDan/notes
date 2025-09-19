@@ -1,0 +1,108 @@
+Bash is a interpreter and advanced version of sh ---- study what is bash
+Shell/Bash is a interpreter for command which interprets with kernal and gives us the output
+
+kernal is type of operating sysytem where linux machine runs
+
+all the commands are stored in /usr/bin 
+
+when a root user then the sign will be # else local user then $, local user cannot make any root directory changes, 
+super user changes or any security changes.
+
+to create a linux user - useradd pranjal
+password - passwd password
+check if created - id username
+add to sudo group - usermod -aG sudo username --------------
+sudo -l
+
+ls -ld - list of directories
+ls -l list of all files and directories.
+
+we can access our linux machine remotely through ssh (secure shell ) -----------
+
+systemctl start sshd.service
+systemctl status ssh.service
+we can stop any service/ssh by PID number -------------
+
+post rebooting your machines, the services gets disabled
+
+to access through shell -
+
+ssh usrname@ip
+
+
+terminals - tty - telly type
+tty1 - login for gui
+tty2 - login for shell
+
+if u want to switch the terminals then simply do ctrl + alt + F3,2,1 etc
+
+for poweroff machine - poweroff
+for rebooting the machine - rebooting
+
+detailed time - date +%R or X -------------
+
+man command for help
+
+who is logged in and what it is doing - want
+
+to check file type - file filename or path to file
+
+to see last 2 lines tail -2 filename
+
+total lines in a file --------------
+wc -l filename
+wc -c filename -- character
+wc -w filename --- words
+
+tab completion -- double tap
+
+--------------------------------------------------------
+
+man command - fullform manual or instead man u can use pinfo
+q for quit
+
+man page have many things like synopsis, description, name, file
+
+if you want to savwe any output of any command then --- command >path_where_to_save
+
+> again will do overwrite
+>> will do append
+
+error is denoted by 2, input by 1, so if u want to save any error in file then e.g
+
+ll /root 2>file_path
+
+----------------------------------------------
+ creating pipeline, constructing pipelines 
+ 
+e.g cat file.txt | head n -4 >output.txt
+
+----------------------------------------------
+
+Pipeline using Tee command 
+
+tee generally gives your disaplay output and saves that output in a file 
+
+IN vim - undo u, delete dd, top line gg
+
+------------------------------------------------
+
+users
+
+superuser (root) has UID as 0. ---------------
+
+System-user
+used by processes that provide supporting services
+these processes, daemones, do not need to run as a superuser
+they are non-interactive ( SYS_ accounts )
+
+regular accounts - local accounts ( described at Top )
+
+
+
+check files and directories made by which user - ll
+
+kill process caommand ----------------
+
+
+

@@ -1,0 +1,567 @@
+🐚 What is Shell?
+A shell is an interface that allows users to interact with the kernel (core part of the OS). It accepts human-readable commands and converts them into actions taken by the system.
+
+Types of Shells:
+
+bash – Bourne Again Shell (Most common)
+sh – Original Bourne Shell
+ksh – Korn Shell
+tcsh – TENEX C Shell (extension of csh)
+fish – Friendly Interactive Shell
+zsh – Z Shell (commonly used in macOS)
+
+✅ Note: Most shell scripting is done in bash, which is why it's commonly called bash scripting.
+
+🔍 How to Check Your Current Shell:
+
+echo $0
+
+🖥️ How to Check OS Version:
+
+cat /etc/os-release
+
+📜 What is Shell Scripting?
+
+Shell scripting is:
+
+A set of commands written in a file to automate tasks.
+When executed, all commands inside the file run sequentially.
+Used for task automation, batch processing, system maintenance, etc.
+
+🧪 First Basic Script:
+
+#!/bin/bash
+echo "Hello, World!"
+
+#!/bin/bash → This is called the shebang.
+It tells the system to use the bash shell to interpret the script.
+
+echo → Prints the message to the terminal.
+
+🔐 How to Run a Script
+1. Give Execute Permission:
+
+chmod +x script_name.sh
+
+2. Run the Script:
+
+./script_name.sh
+
+OR (Without Execute Permission):
+bash script_name.sh
+
+OR (Using Full Path):
+/path/to/script/script_name.sh
+✅ Use ls -ltr to check file permissions.
+
+💬 Comments in Shell Script
+
+Single-line Comment:
+# This is a comment
+
+Multi-line Comment (using : <<'COMMENT'):
+
+: <<'COMMENT'
+This is a
+multi-line comment.
+COMMENT
+
+
+⚠️ There is no official multi-line comment syntax in bash, but the above is a common workaround.
+
+--------
+
+💡 Using Variables in Shell Scripting
+1. Defining Variables
+In shell scripting, variables are used to store data like numbers, strings, filenames, etc. You don’t need to declare a type for variables.
+To define a variable, write the name of the variable followed by an equal sign and the value — all without spaces. For example:
+a=10, name="Pranjal", age=28.
+To use or print these variables, you refer to them with a $ sign:
+echo "My name is $name, variable a = $a, and age = $age"
+Always use double quotes around strings that may contain spaces — this avoids errors and treats the entire string as a single value.
+
+2. Storing Command Output in a Variable
+Sometimes you want to use the result of a command (like date, hostname, whoami) in your script.
+You can do this by using $() — this captures the command’s output and stores it in a variable.
+Example: HOSTNAME=$(hostname)
+This will store your machine’s name in the variable HOSTNAME.
+Later, you can use echo "Machine name is $HOSTNAME" to print it.
+This is useful for automation where you want to include real-time values in your script.
+
+3. Constant (Read-only) Variables
+In some cases, once a variable is set, you don’t want its value to be changed by accident.
+To protect such variables, use the readonly keyword.
+Example: readonly COLLEGE="DU"
+Now, even if someone tries COLLEGE="ABC", the shell will throw an error saying you cannot modify a read-only variable.
+This is helpful when you have fixed values like file paths, user names, or configuration settings that should remain constant throughout the script.
+
+🧠 Arrays in Shell
+1. Defining an Array
+Arrays allow you to store multiple values in a single variable.
+Instead of creating separate variables for each item, you can create one array with multiple elements.
+Syntax: myArray=(1 2 Hello "Hey man")
+Here, index 0 has 1, index 1 has 2, and so on.
+
+2. Accessing Array Elements
+To get a value from an array, use its index like this: ${myArray[0]} or ${myArray[3]}.
+Remember, indexing starts from 0, not 1.
+If you try ${myArray[5]} and there’s no value at that index, it will return blank.
+
+3. Number of Elements in an Array
+You can find how many values are stored in the array using:
+${#myArray[*]}
+This will count all items present and is helpful when looping through the array.
+
+4. Appending to an Array
+If you want to add more values to an existing array, you can use the += operator.
+For example: myArray+=(5 6 7) adds these values at the end of the array.
+This is useful when values are dynamic or fetched during script execution.
+
+🔑 Associative Arrays (Key-Value Pairs)
+Associative arrays are like dictionaries. Instead of using numbers as indexes, you use meaningful names as keys.
+This makes your code more readable and manageable.
+For example:
+declare -A myArray is used to define an associative array.
+Then assign values like:
+myArray=([name]="Pranjal" [age]=20 [city]="Pataudi")
+You can access the values using their keys like:
+${myArray[name]} or ${myArray[city]}
+These arrays are especially useful when you're dealing with structured data like user profiles, configuration settings, etc.
+Note: Associative arrays only work in bash version 4.0 or above.
+
+🔤 String Operations
+1. Length of a String
+To find out how long a string is, you use: ${#myVar}.
+Example: myVar="Hello World" → ${#myVar} returns 11.
+This is useful in validations, like checking if a password has enough characters.
+
+2. Changing Case (Uppercase/Lowercase)
+Shell gives simple options to convert strings to uppercase or lowercase:
+
+${myVar^^} → converts to uppercase
+
+${myVar,,} → converts to lowercase
+For example, if myVar="hello", then ${myVar^^} becomes HELLO.
+
+3. String Replacement
+If you want to replace a part of a string with something else, use:
+replace=${myVar/old/new}
+This will replace the first occurrence of old with new.
+For example, if myVar="hello pranjal" then replacing pranjal with paul gives hello paul.
+
+4. Substring or Slicing
+You can extract a portion of a string using slicing: ${myVar:start:length}
+If myVar="hello pranjal", then ${myVar:0:5} gives hello, and ${myVar:6:7} gives pranjal.
+This is useful when you need just a part of a string like a file name, domain name, etc.
+
+
+🧑‍💻 User Interaction in Shell
+To take input from the user, we use the read command. It stores the user input into a variable.
+
+Example:
+
+
+
+#!/bin/bash
+read name
+read age
+echo "Your name is $name and age is $age"
+To show a message while reading input, use the -p option with read.
+
+
+
+read -p "What is your name? " name
+echo "Your name is $name"
+➗ Arithmetic Operations
+Arithmetic operations can be done using let, expr, or (( )).
+
+Using let:
+
+
+
+#!/bin/bash
+a=2
+b=3
+let mult=a*b
+echo $mult
+This multiplies a and b, and prints 6.
+
+Using double parentheses:
+
+
+
+echo "Subtraction is $(( a - b ))"
+This will subtract b from a.
+
+Using let for addition:
+
+
+
+let sum=a+b
+echo $sum
+Note: let treats variables as numbers, not strings.
+
+🔁 Conditional Statements (if-else)
+If-else helps you run commands based on conditions.
+
+
+
+read -p "Enter your marks: " marks
+if [ $marks -gt 40 ]
+then
+  echo "You are pass"
+else
+  echo "FAIL"
+fi
+Comparison operators:
+
+Equal to: -eq
+
+Not equal to: -ne
+
+Greater than: -gt
+
+Less than: -lt
+
+Greater than or equal: -ge
+
+Less than or equal: -le
+
+🪜 Elif (Else If) Condition
+Elif lets you check multiple conditions:
+
+
+
+read -p "Enter your marks: " marks
+if [ $marks -ge 40 ]
+then
+  echo "Pass"
+elif [ $marks -ge 30 ]
+then
+  echo "Second division"
+else
+  echo "Fail"
+fi
+You can use as many elif as you need.
+
+
+🔘 Case Statements (like switch)
+Case is used when you want to choose between multiple options.
+
+bash
+
+echo "Hey, choose an option"
+echo "a = Show current date"
+echo "b = List files in directory"
+read choice
+
+case $choice in
+  a) date ;;
+  b) ls ;;
+  *) echo "Not a valid option" ;;
+esac
+esac marks the end of the case block.
+
+⚙️ Logical Operators
+Logical operators combine conditions.
+
+&& means AND (both must be true)
+
+|| means OR (any one must be true)
+
+! means NOT (opposite of condition)
+
+Example using AND (&&):
+
+
+
+read -p "Enter your age: " age
+read -p "Enter your nationality: " nationality
+
+if [[ $age -ge 18 ]] && [[ $nationality == "indian" ]]
+then
+  echo "You can vote"
+else
+  echo "You cannot vote"
+fi
+To use OR (||), just replace && with ||:
+
+
+
+if [[ $age -ge 18 ]] || [[ $nationality == "indian" ]]
+This will be true if either condition is true.
+
+
+----
+
+🔁 Loops in Shell Scripting (with Theory + Code)
+Loops are used to repeat a set of instructions until a certain condition is met. They help in automation when you want to run something multiple times.
+
+1. For Loop
+The for loop is used when you know in advance how many times you want to repeat a block of code.
+
+Syntax:
+
+for variable in list
+do
+  commands
+done
+This loop goes through each item in the list one by one.
+
+Example 1: Print numbers from 1 to 8
+
+
+for i in 1 2 3 4 5 6 7 8
+do
+  echo "Number is $i"
+done
+
+Explanation:
+
+i is a loop variable.
+On each iteration, it holds one value from the list.
+The value is printed using echo.
+
+Example 2: Print a list of names
+
+
+
+for name in pranjal shivam harshit
+do
+  echo "Name is $name"
+done
+
+Explanation:
+
+Loop runs three times for the names listed.
+It prints one name in each iteration.
+
+2. For Loop with a Range
+Instead of manually typing numbers, you can define a range using {}.
+
+Example:
+
+
+
+for i in {1..5}
+do
+  echo "Number is $i"
+done
+
+Explanation:
+
+{1..5} tells the shell to loop from 1 to 5.
+Useful when dealing with sequences.
+
+3. Reading Values from a File using For Loop
+Example:
+
+
+
+FILE="/home/names.txt"
+for name in $(cat $FILE)
+do
+  echo "Name is $name"
+done
+
+Explanation:
+
+This reads lines from a file called names.txt.
+Each word (or line) is stored in name and printed.
+⚠ If names have spaces, this may split them — prefer while read for such cases.
+
+4. For Loop with Arrays
+You can loop over an array using index values.
+
+Example:
+
+
+
+myarray=(1 2 3 4 hello hi)
+length=${#myarray[*]}
+
+for (( i=0; i<$length; i++ ))
+do
+  echo "Value of array is ${myarray[$i]}"
+done
+Explanation:
+
+myarray is an array with mixed values.
+
+${#myarray[*]} gives number of elements.
+
+The loop runs using index numbers (0 to length-1).
+
+🔁 While Loop
+A while loop keeps running as long as the condition is true.
+
+Syntax:
+
+
+
+while [ condition ]
+do
+  commands
+done
+Example:
+
+
+
+count=0
+num=10
+while [ $count -le $num ]
+do
+  echo $count
+  let count++
+done
+
+
+Explanation:
+
+Loop starts from 0 and runs while count is less than or equal to 10.
+let count++ increases the value by 1 each time.
+
+🔁 Until Loop
+This loop is opposite of while. It keeps running until the condition becomes true.
+
+Syntax:
+
+
+
+until [ condition ]
+do
+  commands
+done
+Example:
+
+
+
+a=10
+until [ $a -eq 1 ]
+do
+  echo $a
+  let a--
+done
+Explanation:
+
+This loop runs while a is not equal to 1.
+
+Each time, a decreases until it becomes 1.
+
+🔁 Infinite Loop
+Used when you want a process to run endlessly (like system monitoring).
+
+Example:
+
+
+
+while true
+do
+  echo "Hi"
+  sleep 2s
+done
+Explanation:
+
+while true means run forever.
+
+sleep 2s pauses the loop for 2 seconds after each echo.
+
+
+📂 Read File Line-by-Line using While Loop
+This is a safe way to read data from a file without breaking on spaces.
+
+Example:
+
+while read myVar
+do
+  echo "Value from file is $myVar"
+done < names.txt
+Explanation:
+
+Reads each line from names.txt into myVar.
+
+done < filename redirects the file as input to the loop.
+
+📄 Reading CSV File with While Loop
+Used when each line has multiple values separated by commas.
+
+Example:
+
+
+while IFS="," read f1 f2 f3
+do
+  echo $f1
+  echo $f2
+  echo $f3
+done < filename.csv
+Explanation:
+
+IFS="," sets the Internal Field Separator to comma.
+
+Each column is stored in variables f1, f2, f3.
+
+🔧 Functions in Shell Scripting
+A function is a named block of code that can be reused. It helps reduce code repetition.
+
+Why Functions?
+Improves code reusability.
+
+Makes the script cleaner and modular.
+
+Can accept input (arguments).
+
+✅ How to Define a Function
+Two ways to define:
+
+
+
+function myfun {
+  echo "Hi"
+}
+or
+
+javascript
+
+myfun() {
+  echo "Hello"
+}
+Calling the function:
+
+nginx
+
+myfun
+✅ Function with Arguments
+You can pass arguments to functions when calling them.
+
+Example:
+
+
+
+function welcomenote {
+  echo "Welcome $1"
+}
+
+welcomenote Pranjal
+welcomenote Shivam
+Explanation:
+
+$1 is the first argument passed to the function.
+
+When called with different names, it prints a custom welcome message.
+
+Multi-argument example:
+
+
+
+function showinfo {
+  echo "Name: $1"
+  echo "Age: $2"
+}
+
+showinfo Pranjal 28
+Explanation:
+
+$1 stores "Pranjal", $2 stores 28.
+
+You can use more variables like $3, $4, etc.
+

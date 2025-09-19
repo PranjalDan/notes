@@ -1,0 +1,86 @@
+Linux admin Notes:
+waht is bootloader -- bootloader is basically a process in kernal which runs the important files when the machine or kernel is started.
+
+grub - grub is a bootloader which loads and manages the boot process.
+
+df -h --> disk sizes
+top - how much cpu is used.
+
+Unix is commerical and parent of linux.
+
+
+hard link softlink study..!
+ln -s /path/to/file
+
+cut command
+
+tee -- print and save in file at same time
+
+port details - ssh - 22
+read different port details too
+
+sSH have public key and private, private key is with source and public with dest.
+
+see how to connect 2 computers by ssh.
+
+---
+df - disk usgae
+du -- disk utility ( particular folder )
+
+--
+nohub is storing the output in a file
+
+nohup df -h
+
+vmstat is for giving complete health status of vm
+
+-------
+
+uname is for telling the linux system
+who - users info, which user logged in when
+whoami -- current user
+
+apt - ubuntu, dnf - fedora, portage - chomeOS, gentoo linux
+
+---
+useradd -m username --> -m for making a user directory
+
+--
+adding user to grp 
+sudo gpasswd -a username groupname 
+
+----
+multiple user add
+sudo gpasswd -M user1,u2,u3 groupname
+
+---
+
+umask study - by default permission of new created file.
+
+--
+sudo chown usrname file.txt
+
+sudo chown grpname file.txt
+
+----
+zip zip.txt folder_name
+learn tar commands.
+tar -xvzf ---- for extraction
+x - extract
+v verbose
+z zip
+f files
+----
+tar -cvzf  --- compress
+tar -cvzf file.tar.gz folder_name
+
+learn scp, rsync
+
+-----
+networking
+net-tools should be installed for network commands
+
+netstat -- tells network network statisctics, active internet connection.
+
+
+

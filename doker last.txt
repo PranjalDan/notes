@@ -1,0 +1,71 @@
+docker 
+
+learn the docker architecture first.
+
+referesh command for a group - newgrp group_name
+
+--
+if we run docker run imagename then it'll pull image and run too..
+
+--
+learn container to run in detach mode.
+
+in detach mode, -d, the container gets run in detach mode in background
+
+--
+Dockerfile
+Instructions to build image
+
+
+#pull a base image which gives all required tools and librariries.
+FROM openjdk:17-jdk-alpine    -- from is used to have base image and openjdk is basically java based image which you can see from net and 17 is its version etc
+
+#create a folder where the app code will be stored
+WORKDIR /app   -- make a dir named /app in container
+
+COPY src/Main.java /app/Main.java  -- copy everything from source to container dir
+
+
+#complile the app code
+RUN javac src/Main.java   --- this file is copied from above
+
+#run the application
+CMD ["java","Main"] - Cmd command is run when image is build  to execute
+
+------
+
+then docker build javaapp . --- . because of location and then once u run the command, it'll run the image.
+
+---
+now image is ready so we can run this image by docker run.
+
+refresh the image 
+docker build -t imagename
+
+then docker run
+
+----
+docker attached containerid --live logs
+--
+docker exec -it id bash --- inside container (it - interactive termnial)
+---
+2 docker container to talk to each other needs docker network.
+
+--
+learn types of docker network
+
+learn environment variable, -p port:port
+
+------
+volume is neccessary
+container ka data map krdete hai host se ki loss na do data ka.
+named volume or custome volume and default volume dekh lena -v ke saath
+
+
+----
+
+docker compose automate all the things in one yml file.
+
+
+
+

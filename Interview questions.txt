@@ -1,0 +1,1401 @@
+Q1. Explain the difference between Azure App Service, AKS, and Azure Functions. 
+When would you use each?
+
+Answer:
+
+Azure App Service is a fully managed platform for hosting web apps, REST APIs, and mobile backends. 
+You don’t manage servers — you just deploy your code. Ideal for traditional web apps or APIs where you want to focus on code, not infrastructure.
+
+AKS (Azure Kubernetes Service) is a managed Kubernetes cluster for containerized workloads. 
+You manage pods, deployments, and scaling policies but Microsoft handles the control plane. 
+Best for microservices or apps requiring container orchestration and portability.
+
+Azure Functions is a serverless compute service where you run small pieces of 
+code (functions) triggered by events (HTTP request, queue message, blob upload). 
+You pay per execution, no server management. Great for event-driven or background tasks.
+
+
+Use case summary:
+App Service → Web apps / APIs with minimal infra mgmt.
+AKS → Complex, containerized, microservices.
+Functions → Event-driven, serverless, pay-per-use workloads.
+
+
+---------------------------------------------------
+
+Q2. What are Azure Resource Groups and how do they relate to RBAC and ARM templates?
+
+Answer:
+
+Azure Resource Group (RG): A logical container for Azure resources (VMs, storage, VNets, etc.). 
+Everything inside an RG shares the same lifecycle, permissions, and management scope. You can deploy, manage, or delete all resources in an RG together.
+
+RBAC (Role-Based Access Control): Permissions in Azure are applied at different scopes — 
+subscription, resource group, or resource. By assigning roles at the resource group level, all resources inside inherit those permissions. 
+This is the most common way to delegate access.
+
+ARM Templates: Azure Resource Manager templates are JSON files that define infrastructure declaratively. 
+When you deploy an ARM template, you target a resource group. The template then provisions all resources into that RG.
+
+In short: RG = container; RBAC = who can do what at that scope; ARM template = infrastructure definition deployed into RG.
+
+
+
+----------------------------------------------------
+
+Q3. How do you design for high availability in Azure (regions, availability zones, fault domains)?
+
+Answer:
+High availability in Azure means making sure your workloads stay up even if part of the infrastructure fails. You do it at multiple layers:
+
+Regions: Deploy resources in two or more Azure regions (geo-redundancy) 
+so if one region goes down, traffic can fail over to another. Use Traffic Manager/Front Door or load balancers for failover.
+
+Availability Zones (AZs): Within a region, you can deploy your VMs or 
+services across physically separate datacenters called AZs. This protects against datacenter-level failures. 
+Many Azure PaaS services support zone redundancy automatically.
+
+Availability Sets / Fault Domains: For IaaS VMs inside one region, place them in an Availability Set. 
+Azure then distributes them across multiple fault domains (different racks/servers) and update domains (rolling updates). 
+This protects against host or rack failures.
+
+Load Balancers: Use Azure Load Balancer or Application Gateway to distribute traffic across instances.
+
+Backups/DR: Combine HA with disaster recovery — e.g., Geo-redundant Storage (GRS) or Azure Site Recovery.
+
+Summary:
+Region level = disaster recovery.
+Zone level = datacenter outage protection.
+Availability Set/fault domain = host/rack outage protection.
+
+
+------------------------------------------------------------------------------
+
+Q4. Compare Azure Storage types (Blob, File Share, Table, Queue). When do you pick each?
+
+Answer:
+Azure Storage gives you different services for different data patterns:
+
+Blob Storage
+Stores unstructured data like images, videos, backups, logs. 
+Supports block blobs (general files), append blobs (log-like), and page blobs (random-access, e.g. VHDs). Access via HTTP/HTTPS or SDKs.
+Use when: you need scalable object storage.
+
+File Shares (Azure Files)
+Fully managed SMB or NFS file shares in the cloud. Works like a network drive you can mount on Windows, Linux, or Azure VMs.
+Use when: you need shared files accessible by multiple machines.
+
+Table Storage
+NoSQL key–value store. Stores large amounts of structured but non-relational data. Very cheap, highly scalable.
+Use when: you need fast lookups of simple entities without joins.
+
+Queue Storage
+Message queue for decoupling components and asynchronous processing. Each message up to 64 KB.
+Use when: you need reliable messaging between services.
+
+Summary Table:
+
+Service	Data Type	Typical Use
+Blob	Unstructured/object	Media, backups, logs
+File Share	Shared files over SMB/NFS	Lift-and-shift apps needing file shares
+Table	Structured NoSQL	Metadata, IoT data, logs
+Queue	Messaging	Asynchronous workflows
+
+
+--------------------------------------------------------------------
+
+Q5. Explain VNets, subnets, NSGs, and how to secure them.
+
+Answer:
+
+Virtual Network (VNet):
+The fundamental building block of Azure networking. It’s a private, isolated network in the Azure cloud, like your own virtual data center. 
+You can connect VNets to on-premises networks or other VNets.
+
+Subnets:
+Each VNet is divided into subnets to segment the address space and group resources logically. 
+Each subnet gets its own range of IP addresses and its own security settings.
+
+Network Security Groups (NSGs):
+Act like virtual firewalls. You attach them to subnets or NICs to allow/deny inbound and outbound traffic 
+based on rules (source, destination, port, protocol).
+
+How to secure:
+
+Place different tiers (web, app, DB) in separate subnets.
+
+Apply NSGs with least-privilege rules at subnet or NIC level.
+
+Use Azure Firewall or third-party appliances for centralized outbound control.
+
+Use Private Endpoints or Service Endpoints to keep Azure services traffic inside your VNet.
+
+Combine with Azure DDoS Protection for external exposure.
+
+Summary:
+VNet = private network,
+Subnets = segmentation,
+NSG = firewall rules,
+Security = isolation + least privilege + Azure Firewall/Private endpoints.
+
+
+----------------------------------------------------------
+
+Q7. What’s Azure Key Vault, and how do you integrate secrets with apps or pipelines?
+
+Answer:
+
+Azure Key Vault:
+A managed service to securely store and manage secrets, keys, and certificates. Microsoft handles the HSMs, encryption at rest, and access auditing.
+
+Key Benefits:
+
+Central place to store sensitive data instead of hard-coding it.
+
+Fine-grained access control via RBAC and access policies.
+
+Automatic key rotation, versioning, and auditing.
+
+Integration with Apps:
+
+Use Managed Identity of an Azure resource (VM, App Service, Function) so it can request a token from Azure AD and 
+access Key Vault without any credentials stored in code.
+
+Your application retrieves secrets at runtime via SDK/REST API or through Key Vault references in App Service settings.
+
+Integration with Pipelines:
+
+In Azure DevOps, you can link a Key Vault to a pipeline’s variable group. The pipeline fetches secrets at runtime.
+
+In GitHub Actions, use Azure CLI or dedicated actions to retrieve secrets using a service principal or managed identity.
+
+In short: Store secrets/keys centrally in Key Vault, use managed identity to access them, integrate directly with pipelines or 
+application configuration — no secrets in code or YAML.
+
+
+-----------------------------------------------------------
+
+
+8. Describe Azure Monitor, Application Insights, and Log Analytics. How do you implement monitoring?
+
+Answer:
+
+Azure Monitor
+The umbrella service for collecting, analyzing, and acting on telemetry data (metrics, logs, alerts) 
+from Azure resources, apps, and VMs. Think of it as the main monitoring platform.
+
+Application Insights
+A feature of Azure Monitor focused on application performance monitoring (APM). 
+It tracks requests, dependencies, exceptions, page loads, and user behavior. 
+You instrument your app with an SDK or enable it automatically for App Service.
+
+Log Analytics
+A workspace under Azure Monitor where all logs and telemetry are stored. 
+You can run Kusto Query Language (KQL) queries to analyze data across multiple resources.
+
+How to implement monitoring:
+
+Create a Log Analytics Workspace in Azure Monitor.
+
+Enable diagnostics/metrics for each Azure resource to send logs/metrics to that workspace.
+
+For applications, enable or integrate Application Insights.
+
+Configure alerts in Azure Monitor for metrics or log queries (CPU > 80%, error rate, etc.).
+
+Use dashboards and workbooks to visualize the data.
+
+Optionally route logs to storage or SIEM for retention/compliance.
+
+In short:
+Azure Monitor = full stack monitoring platform.
+Application Insights = deep app-level performance monitoring.
+Log Analytics = centralized log store & queries.
+Implement by enabling diagnostics, linking to a workspace, setting alerts, and visualizing in dashboards.
+
+
+-------------------------------------------------------------------
+
+
+Q9. Managed Identities vs Service Principals
+
+Answer:
+
+Service Principal: Manually created identity in Azure AD; you manage its secret/cert. Used by apps/automation not running in Azure.
+
+Managed Identity: Automatically managed identity tied to an Azure resource; no secrets to manage, Azure rotates them.
+
+Access: Both get tokens from Azure AD; managed identity removes secret management.
+
+In short:
+Use Managed Identity for Azure-hosted resources (no secrets).
+Use Service Principal for external automation.
+
+Q10. ARM Templates vs Bicep vs Terraform
+
+Answer:
+
+ARM Templates: JSON, native to Azure, verbose.
+
+Bicep: Simplified DSL over ARM templates, Microsoft’s new native IaC.
+
+Terraform: Open-source, HCL syntax, multi-cloud, huge ecosystem.
+
+In short:
+ARM = old JSON,
+Bicep = new Azure-native DSL,
+Terraform = multi-cloud and most widely used.
+
+Q11. Availability Sets vs Availability Zones
+
+Answer:
+
+Availability Sets: Spread VMs across racks inside one datacenter; protects against host/rack failures only.
+
+Availability Zones: Spread resources across physically separate datacenters in a region; protects against full datacenter outage.
+
+In short:
+Sets = resilience inside one datacenter.
+Zones = resilience across datacenters (higher SLA).
+
+Q12. Azure Firewall vs NSGs
+
+Answer:
+
+NSG: Basic stateful filtering at subnet/NIC level. Free, simple.
+
+Azure Firewall: Managed firewall with L3–L7 filtering, SNAT, threat intel, logging. Paid, centralized.
+
+In short:
+NSG = per-subnet basic rules.
+Azure Firewall = enterprise-grade centralized firewall.
+
+Q13. Azure Policy vs Blueprints
+
+Answer:
+
+Azure Policy: Enforce rules/standards at subscription/RG level (region restrictions, tag enforcement).
+
+Blueprints: Bundle policies + role assignments + templates for repeatable landing zones.
+
+In short:
+Policy = single rule enforcement.
+Blueprint = full package of rules + roles + templates
+
+
+------------------------------------------------
+
+Q1. Explain the Terraform workflow (init, plan, apply, destroy) and state file management.
+
+Answer:
+
+terraform init – Initializes the working directory, downloads providers/modules.
+
+terraform plan – Shows what changes will be made without actually applying them.
+
+terraform apply – Executes the plan and makes the changes in real infrastructure.
+
+terraform destroy – Removes all managed resources.
+
+State File: Terraform keeps a state file (local or remote) to track what it has already created. This state is critical for detecting changes and must be secured (store in Azure Storage backend with locks).
+
+In short:
+Init = setup,
+Plan = preview,
+Apply = deploy,
+Destroy = tear down,
+State = Terraform’s memory of your infra — secure it.
+
+Q2. How do Terraform workspaces differ from separate state files?
+
+Answer:
+
+Workspaces let you use the same configuration to manage multiple environments (dev, test, prod) with separate state files under the hood.
+
+With separate state files you manually create different backend files per environment.
+
+Workspaces are simpler for small setups but in enterprises people often prefer separate backends or even separate repos for strict isolation.
+
+In short:
+Workspace = built-in multiple states in one directory.
+Separate state files/backends = manual isolation but more control.
+
+Q3. What are Terraform modules, and how do you structure them for large projects?
+
+Answer:
+
+A module is any set of Terraform resources in its own folder, optionally with variables.tf and outputs.tf.
+
+You call modules from a root module using module "name" { source = "./path" }.
+
+For large projects:
+
+Create reusable modules for common patterns (VM, storage, network).
+
+Keep root module minimal — just orchestrates module calls.
+
+Version control your modules and pin versions.
+
+In short:
+Modules = reusable building blocks.
+Root module calls child modules.
+Keeps configs DRY and organized.
+
+Q4. How do you handle sensitive variables in Terraform (like secrets)?
+
+Answer:
+
+Mark variables as sensitive = true in variables.tf so they’re not shown in CLI output.
+
+Don’t hard-code secrets in .tf files; use environment variables, .tfvars in secure storage, or pipeline secret stores (Azure Key Vault).
+
+Use Terraform’s integration with Key Vault or pass secrets at runtime through CI/CD.
+
+In short:
+Never hard-code.
+Use secure variable storage + sensitive = true.
+Fetch secrets from Key Vault or pipeline.
+
+Q5. How would you implement conditional deployments or dynamic blocks?
+
+Answer:
+
+Conditional deployments: Use ternary expressions, e.g.
+count = var.enabled ? 1 : 0 to deploy resource only if variable is true.
+
+Dynamic blocks: Generate nested blocks dynamically (like multiple security rules) based on a list or map.
+
+This makes your code flexible and avoids repetition.
+
+In short:
+Conditionals = count or for_each with expressions.
+Dynamic blocks = loop over data to create repeated sub-blocks.
+
+
+Q6. How do you manage Terraform backends (e.g., Azure Storage as backend)?
+
+Answer:
+
+By default Terraform keeps terraform.tfstate locally, which is risky for teams.
+
+A backend stores the state file remotely and optionally enables state locking.
+
+For Azure you use the azurerm backend: configure a storage account, container, and key for the state file.
+
+Add a backend "azurerm" block inside terraform {}.
+
+This allows multiple team members to share state safely and avoid conflicts.
+
+In short:
+Backend = remote state storage + locking.
+Azure → store state in Storage Account.
+
+Q7. How do you manage outputs and cross-module references in Terraform?
+
+Answer:
+
+Define outputs in a module with
+output "name" { value = resource.attr }.
+
+Call them in the root module using
+module.module_name.output_name.
+
+This allows one module to expose values (like subnet IDs) to another module.
+
+Keep outputs minimal and meaningful; avoid exposing secrets if possible.
+
+In short:
+Outputs = module’s exported values.
+Other modules consume them via module.module_name.output.
+
+Q8. How would you integrate Terraform into a CI/CD pipeline?
+
+Answer:
+
+Store .tf files in Git repo.
+
+Pipeline steps:
+
+terraform fmt / validate for linting.
+
+terraform init (backend + providers).
+
+terraform plan and output the plan as an artifact.
+
+Require approval for plan review.
+
+terraform apply automatically after approval.
+
+Use pipeline secrets/Key Vault for credentials.
+
+Use a remote backend for consistent state.
+
+In short:
+Pipeline = validate → init → plan (review) → apply.
+Store state remotely, inject secrets from Key Vault.
+
+Q9. How do you handle Terraform state drift or locking issues?
+
+Answer:
+
+Drift: Resources changed outside Terraform. Run terraform plan to detect drift; apply to reconcile.
+
+Locking: Remote backends (like Azure Storage with blob leases) prevent two applies at once. If a lock is stuck, manually release it in the backend.
+
+Encourage team discipline: never modify infra manually; always via Terraform.
+
+In short:
+Plan detects drift.
+Apply reconciles drift.
+Remote backends + locks prevent concurrent changes.
+
+Q10. How do you organize Terraform for multiple environments?
+
+Answer:
+Common patterns:
+
+Workspaces: Single config, multiple states (dev/test/prod).
+
+Directory per environment: Separate main.tf and backends per environment.
+
+Separate repos: For strict isolation.
+
+Use variable files (dev.tfvars, prod.tfvars) or environment-specific modules.
+
+In short:
+Workspaces for simple multi-env.
+Separate folders/backends/repos for strict isolation.
+Use tfvars for environment-specific values.
+
+Q11. What is Terraform Cloud and when would you use it?
+
+Answer:
+
+Terraform Cloud is HashiCorp’s hosted service that runs Terraform for you.
+
+Features: remote state, VCS integration, policy-as-code, cost estimation, approvals.
+
+Use it when you don’t want to host your own backend or need team collaboration, governance, and audit built in.
+
+In short:
+Terraform Cloud = SaaS backend + runner + governance.
+Good for team use without self-hosting.
+
+
+----------------------------------------------------------------------------
+____________________________________________________________________________
+
+
+Q1. How would you create a Resource Group and Storage Account using PowerShell?
+
+Answer:
+
+Install the Az PowerShell module: Install-Module Az -Scope CurrentUser.
+
+Connect to Azure: Connect-AzAccount.
+
+Create a Resource Group:
+New-AzResourceGroup -Name "MyRG" -Location "EastUS".
+
+Create a Storage Account:
+New-AzStorageAccount -ResourceGroupName "MyRG" -Name "mystorageacct123" -Location "EastUS" -SkuName Standard_LRS -Kind StorageV2.
+
+In short:
+Use New-AzResourceGroup and New-AzStorageAccount after Connect-AzAccount.
+
+Q2. How would you automate post-deployment steps using Bash or Azure CLI?
+
+Answer:
+
+Use the Azure CLI in Bash scripts.
+
+Example: After VM creation, run:
+az vm run-command invoke -g MyRG -n MyVM --command-id RunShellScript --scripts "sudo apt-get update && sudo apt-get install nginx -y".
+
+You can wrap multiple CLI calls in one Bash file and run it in pipelines or locally.
+
+In short:
+Wrap az CLI commands in Bash to automate post-deployment tasks; run commands on VMs with az vm run-command.
+
+Q3. How do you structure scripts so they’re reusable across environments?
+
+Answer:
+
+Parameterize inputs (resource group, region, names) instead of hard-coding.
+
+Use configuration files (.json or .env) to store environment values.
+
+Keep functions modular; one script per logical task.
+
+Output values (IDs, endpoints) clearly for chaining into other scripts/pipelines.
+
+In short:
+No hard-coding; parameterize, modularize, use config files; output results for reuse.
+
+Q4. How would you pull a secret from Azure Key Vault in PowerShell?
+
+Answer:
+
+$secret = Get-AzKeyVaultSecret -VaultName "MyVault" -Name "DbPassword"
+$secretValue = $secret.SecretValueText
+
+
+Make sure your account or script has access policy or RBAC for the vault.
+
+In short:
+Use Get-AzKeyVaultSecret and ensure RBAC or access policy permission.
+
+Q5. How can you use Managed Identity inside a script running on a VM?
+
+Answer:
+
+Enable System Assigned Managed Identity on the VM.
+
+The VM gets a token endpoint at http://169.254.169.254/metadata/identity/oauth2/token.
+
+In PowerShell or Bash, call the endpoint to get a token, then call Azure REST APIs with that token — no credentials stored.
+
+Az CLI and Az PowerShell automatically use the managed identity if you run them on the VM.
+
+In short:
+Enable Managed Identity → VM gets token endpoint → script uses Az CLI or REST with that token → no secrets.
+
+Q6. Example of a small PowerShell script to deploy multiple resources from a CSV
+
+Answer:
+
+Have a CSV like:
+
+Name,Location,RG
+mystorage1,EastUS,RG1
+mystorage2,WestUS,RG2
+
+Script:
+
+$data = Import-Csv ".\storage.csv"
+foreach ($item in $data) {
+  New-AzStorageAccount -Name $item.Name -ResourceGroupName $item.RG -Location $item.Location -SkuName Standard_LRS -Kind StorageV2
+}
+
+
+In short:
+Import-Csv → loop → create resources programmatically.
+
+_________________________________________________________________________________
+
+Q1. What is Linux and why is it used?
+
+Answer:
+
+Linux is an open-source, Unix-like operating system widely used for servers, cloud, and automation.
+
+Known for stability, security, and flexibility.
+
+In short:
+Linux = stable, secure, open-source OS for servers and automation.
+
+Q2. What are runlevels in Linux?
+
+Answer:
+
+Runlevels define system states (0–6) and what services start.
+
+Example: 0 = halt, 1 = single-user, 3 = multi-user, 5 = GUI, 6 = reboot.
+
+In short:
+Runlevels = predefined system states with specific services.
+
+Q3. What is the difference between Unix and Linux?
+
+Answer:
+
+Unix = proprietary, paid OS; Linux = open-source, free.
+
+Linux has more distributions (RHEL, Ubuntu, CentOS).
+
+In short:
+Unix = paid; Linux = free, open-source, many distributions.
+
+Q4. How do you check disk usage in Linux?
+
+Answer:
+
+df -h → disk space of filesystems
+
+du -sh /path → size of directory
+
+In short:
+df = filesystem usage; du = directory size.
+
+Q5. How to check memory usage?
+
+Answer:
+
+free -h → memory stats
+
+top or htop → interactive memory & CPU view
+
+In short:
+free = memory info; top/htop = real-time usage.
+
+Q6. How do you check running processes?
+
+Answer:
+
+ps aux → list processes
+
+top / htop → real-time monitoring
+
+pgrep process_name → find process by name
+
+In short:
+ps = static snapshot; top/htop = live processes.
+
+Q7. How do you kill a process?
+
+Answer:
+
+kill PID → graceful termination
+
+kill -9 PID → force kill
+
+In short:
+kill = stop process; -9 = force stop.
+
+Q8. Difference between soft link and hard link
+
+Answer:
+
+Soft link: pointer to file, can cross filesystems, broken if original deleted
+
+Hard link: another name for same inode, same filesystem, survives deletion if other exists
+
+In short:
+Soft link = shortcut; Hard link = exact duplicate inode.
+
+Q9. How do you check network interfaces?
+
+Answer:
+
+ip a or ifconfig → view interfaces and IPs
+
+nmcli → manage network connections
+
+In short:
+ip a = IP info; nmcli = network config.
+
+Q10. How to check open ports?
+
+Answer:
+
+netstat -tulnp → list open TCP/UDP ports
+
+ss -tuln → modern alternative
+
+In short:
+netstat/ss = open/listening ports.
+
+Q11. How do you monitor logs in Linux?
+
+Answer:
+
+tail -f /var/log/messages → live log monitoring
+
+journalctl -f → systemd logs
+
+In short:
+tail -f = monitor log files; journalctl = systemd logs.
+
+Q12. How do you manage users?
+
+Answer:
+
+useradd username → add user
+
+passwd username → set/change password
+
+usermod -aG group user → add to group
+
+In short:
+useradd = create; passwd = password; usermod = modify group.
+
+Q13. How do you manage permissions?
+
+Answer:
+
+chmod → file permissions
+
+chown → change owner
+
+chgrp → change group
+
+In short:
+chmod = read/write/execute; chown = owner; chgrp = group.
+
+Q14. Difference between process and thread
+
+Answer:
+
+Process: independent execution unit with separate memory
+
+Thread: lightweight, shares memory with process
+
+In short:
+Process = independent; Thread = shared memory.
+
+Q15. How do you check CPU usage?
+
+Answer:
+
+top or htop → interactive
+
+mpstat -P ALL → per CPU stats
+
+In short:
+top = general CPU usage; mpstat = per CPU core.
+
+Q16. How do you schedule jobs?
+
+Answer:
+
+Cron: recurring tasks (crontab -e)
+
+At: one-time task (echo "command" | at time)
+
+In short:
+Cron = scheduled jobs; At = one-time execution.
+
+Q17. How do you check services?
+
+Answer:
+
+systemctl status service → check service status
+
+systemctl start/stop/restart service → manage service
+
+In short:
+systemctl = check/manage services in systemd.
+
+Q18. How do you search files?
+
+Answer:
+
+find /path -name filename → search files
+
+grep "pattern" file → search inside files
+
+In short:
+find = locate files; grep = search inside files.
+
+Q19. How to compress/uncompress files?
+
+Answer:
+
+tar -czf file.tar.gz /dir → compress
+
+tar -xzf file.tar.gz → extract
+
+gzip / gunzip → compress/decompress
+
+In short:
+tar/gzip = compress & extract files.
+
+Q20. How to check filesystem type?
+
+Answer:
+
+df -T → shows filesystem type
+
+mount | grep /dev/sdX → check mounted FS
+
+In short:
+df -T = filesystem type; mount = mounted partitions.
+
+Q21. How do you check listening ports and services?
+
+Answer:
+
+netstat -tulnp → TCP/UDP ports
+
+ss -tuln → modern alternative
+
+In short:
+netstat/ss = listening ports/services.
+
+Q22. How do you check environment variables?
+
+Answer:
+
+env or printenv → show all variables
+
+echo $VAR → specific variable
+
+In short:
+env = all vars; echo $VAR = specific var.
+
+Q23. How do you monitor disk I/O?
+
+Answer:
+
+iostat → CPU & I/O stats
+
+iotop → interactive I/O per process
+
+In short:
+iostat/iotop = monitor disk activity.
+
+Q24. How do you check Linux version?
+
+Answer:
+
+cat /etc/os-release → OS details
+
+uname -r → kernel version
+
+In short:
+os-release = distro; uname -r = kernel.
+
+Q25. How do you manage packages?
+
+Answer:
+
+RHEL/CentOS: yum install package
+
+Debian/Ubuntu: apt install package
+
+Check installed: rpm -qa / dpkg -l
+
+In short:
+yum/apt = install; rpm/dpkg = check installed packages.
+
+
+
+__________________________________________________________________________________
+
+* * * * * command_to_run
+│ │ │ │ │
+│ │ │ │ │
+│ │ │ │ └── Day of week (0–7) [Sunday=0 or 7]
+│ │ │ └──── Month (1–12)
+│ │ └────── Day of month (1–31)
+│ └──────── Hour (0–23)
+└────────── Minute (0–59)
+
+
+_____________________________________________-
+
+
+
+-----------------------------------------------------------------------------------
+
+1. Difference between Azure AD roles and Azure resource roles
+
+Azure AD roles: These control access to Azure Active Directory itself (users, groups, applications, identity settings). 
+Example: A User Administrator can create and manage user accounts, but they don’t control virtual machines or storage.
+Azure resource roles (RBAC): These apply to Azure resources (VMs, storage, databases, etc.). 
+Example: A Contributor can manage a resource group (create/edit/delete resources) but can’t manage Azure AD identities.
+
+👉 Think of it as: AD roles = identity management, Resource roles = resource management.
+
+In-short:
+
+AD roles → manage users/groups.
+Resource roles → manage Azure services/resources.
+
+2. What is Conditional Access in Azure AD?
+
+Conditional Access adds an “if this, then that” rule for logins.
+Example: If a user is signing in from an unknown location, require MFA (multi-factor authentication).
+It helps balance security and productivity by only applying restrictions when needed.
+
+In-short: Conditional Access = rules that control login based on conditions (location, device, risk, etc.).
+
+3. What is Azure Security Center / Microsoft Defender for Cloud?
+
+It’s a unified security management tool for Azure and hybrid environments.
+It continuously scans resources for vulnerabilities, gives security recommendations, and can enforce compliance.
+It also provides threat detection and integrates with Microsoft Defender to protect against attacks.
+
+In-short: Defender for Cloud = monitors, protects, and improves security of your Azure and hybrid workloads.
+
+4. What is a Service Principal? What are Managed Identities?
+
+Service Principal: Like a “user identity” for applications or scripts. Instead of using your own username/password, the app uses a service principal to access resources securely.
+Managed Identities: A special type of service principal created and managed by Azure automatically. You don’t need to handle secrets/passwords — Azure rotates credentials for you.
+
+In-short:
+
+Service Principal = identity for apps.
+Managed Identity = service principal managed by Azure, no secrets needed.
+
+5. How does Azure handle disaster recovery between regions?
+
+Azure uses Region Pairs — each Azure region is paired with another region in the same geography (e.g., East US ↔ West US).
+If one region goes down, services can failover to its pair.
+You can also use services like Azure Site Recovery for replicating VMs and Geo-redundant Storage (GRS) for data.
+
+In-short: Azure ensures DR by using paired regions + replication (Site Recovery, GRS).
+
+6. How would you control costs in Azure?
+
+Use Azure Cost Management to track and analyze usage.
+Apply budgets and alerts to prevent overspending.
+Use tags to identify which team/project is using resources.
+Right-size resources (stop unused VMs, use reserved instances for long-term workloads).
+
+In-short: Track (Cost Mgmt), Limit (Budgets), Organize (Tags), Optimize (Right-size).
+
+7. Client asks: Improve Azure environment security – first 3 steps?
+
+Identity security → Enforce MFA, Conditional Access, least privilege RBAC.
+Data security → Store secrets in Key Vault, enable encryption at rest and in transit.
+Monitoring & compliance → Enable Defender for Cloud, set up alerts, and apply policies.
+
+In-short: Identity (MFA & RBAC) + Data (Key Vault, encryption) + Monitoring (Defender, alerts).
+
+8. How would you migrate on-prem workloads to Azure?
+
+First, assess current infrastructure using Azure Migrate.
+Then, choose migration type:
+Rehost (Lift & Shift) → Move VMs directly to Azure with minimal changes.
+Refactor → Modify apps to use Azure services (like App Service).
+Rebuild/Re-architect → Fully redesign using cloud-native (like Kubernetes).
+Finally, test and optimize after migration.
+
+In-short: Assess → Choose migration strategy (Lift & Shift, Refactor, Rebuild) → Test & optimize.
+
+9. How would you integrate on-prem AD with Azure AD?
+
+Use Azure AD Connect (a sync tool). It synchronizes on-prem users, groups, and passwords with Azure AD.
+This allows hybrid identity: users can log in to cloud apps with the same username/password as on-prem.
+You can also enable SSO (Single Sign-On) so users don’t need to re-enter credentials.
+
+In-short: Integration = Azure AD Connect → sync identities + enable SSO.
+
+
+------------------------------------------------------------------------------------------------------------------
+
+Identity / Access
+
+Q1. How would you design Azure AD for a company with multiple subsidiaries and different security policies?
+
+Create a single Azure AD tenant if centralised identity is required, or multiple tenants if full separation is needed.
+Use Administrative Units and Conditional Access policies to apply different rules to different groups/subsidiaries.
+Use Privileged Identity Management (PIM) to grant time-bound admin access.
+
+In-short: One tenant + Admin Units + Conditional Access + PIM for per-subsidiary security.
+
+Q2. How would you rotate credentials or keys used by applications automatically?
+
+Store all secrets/keys in Azure Key Vault.
+Enable Key Vault Key Rotation (automatic rotation or Event Grid triggers).
+For apps using Managed Identities, you avoid keys entirely.
+
+In-short: Store secrets in Key Vault + enable automatic rotation or use Managed Identity to skip keys.
+
+Q3. When would you choose Managed Identity over Service Principal?
+
+If the app is running in Azure and supports Managed Identity → always prefer it.
+No need to handle secrets; credentials rotate automatically.
+Only use Service Principal if your app is outside Azure or Managed Identity not supported.
+
+In-short: Use Managed Identity inside Azure; Service Principal for external apps.
+
+Networking
+
+Q4. Two VNets are in different regions and different subscriptions. How can you connect them securely and cost-effectively?
+
+Use VNet peering across regions (“Global VNet Peering”) for high-speed, low-latency connectivity.
+Or use a VPN Gateway for encrypted site-to-site tunnel if peering not possible.
+Ensure proper RBAC permissions to set it up across subscriptions.
+
+In-short: Global VNet Peering is fastest; VPN Gateway if encryption or isolation needed.
+
+Q5. When would you use Private Link vs Service Endpoint?
+
+Service Endpoint: Extends your VNet to Azure service over Microsoft backbone but service still has a public endpoint.
+Private Link: Gives the service a private IP inside your VNet, completely eliminating public exposure.
+
+In-short: Service Endpoint = secure path but still public address; Private Link = true private IP.
+
+Q6. How do you secure communication between on-prem network and Azure VNet beyond just VPN Gateway?
+
+Use ExpressRoute (private dedicated connection).
+Combine with IPsec encryption if needed.
+Enforce NSGs/Firewalls at both ends to restrict traffic.
+
+In-short: ExpressRoute + NSG/Firewall = more secure than plain VPN.
+
+Compute / App Hosting
+
+Q7. You have a critical web application on Azure App Service. How would you make it highly available and zero-downtime during upgrades?
+
+Enable App Service deployment slots (blue-green).
+Scale across multiple instances and across regions using Traffic Manager/Front Door.
+Use health checks and staged rollouts.
+
+In-short: Deployment slots + multi-instance + regional failover.
+
+Q8. VM Scale Sets vs AKS: when to use which?
+
+VM Scale Sets: When you need scalable virtual machines (like backend workers).
+AKS (Azure Kubernetes Service): When you want container orchestration and microservices.
+
+In-short: Scale Sets for VMs; AKS for containers/microservices.
+
+Q9. How do you patch a fleet of Azure VMs without downtime?
+
+Use Azure Update Manager (previously Update Management).
+Apply updates in maintenance windows with rolling reboots.
+
+Or put VMs in Availability Sets to ensure at least one instance stays up.
+
+In-short: Update Manager + rolling updates + Availability Sets.
+Storage / Data
+
+Q10. How would you protect sensitive data stored in Blob Storage from public access?
+
+Disable public blob access at storage account level.
+Use Private Endpoints to restrict access to your VNet.
+Enforce RBAC or Shared Access Signatures (SAS) with expiry for access.
+
+In-short: Disable public access + Private Endpoint + SAS/RBAC.
+
+Q11. When do you choose Premium SSD vs Standard HDD?
+
+Premium SSD: For production workloads needing high IOPS and low latency.
+Standard HDD: For dev/test or infrequently accessed data.
+In-short: Premium SSD = high performance; Standard HDD = cheap storage.
+
+Q12. How can you replicate storage data across regions automatically?
+
+Choose Geo-redundant Storage (GRS) or Read-access GRS (RA-GRS) when creating the account.
+This replicates your data asynchronously to a paired region.
+
+In-short: Use GRS/RA-GRS for automatic cross-region replication.
+Monitoring & Security
+
+Q13. You need to monitor thousands of resources in Azure and on-premises. How would you design the monitoring solution?
+
+Centralize logs in Azure Monitor / Log Analytics workspace.
+Use Application Insights for app performance.
+Connect on-prem servers via Log Analytics agents.
+Create dashboards and alerts.
+
+In-short: Central Log Analytics workspace + agents + dashboards/alerts.
+
+Q14. How do you detect and respond to a suspected security breach in an Azure subscription?
+
+Use Microsoft Defender for Cloud to identify alerts.
+Investigate via Azure Security Center recommendations & Azure Sentinel.
+Isolate compromised resources, rotate credentials, apply patches.
+
+In-short: Defender detects → Sentinel investigates → isolate & fix.
+
+Q15. How do you ensure compliance with a standard (like ISO or HIPAA) in Azure?
+
+Use Azure Policy to enforce compliance rules.
+Use Compliance Manager and built-in blueprints for that standard.
+Continuously review reports.
+
+In-short: Azure Policy + Compliance Manager/Blueprints.
+
+Cost & Governance
+
+Q16. Your team keeps spinning up expensive test VMs. How would you control and automatically clean them up?
+
+Apply tags (“Environment: Test”).
+Set up Azure Policy or Automation Runbooks to auto-shut down/delete after X days.
+Use budgets & alerts to notify overspending.
+
+In-short: Tags + Auto-cleanup policy + Budgets.
+
+Q17. How would you design a tagging strategy for large-scale Azure deployments?
+
+Define a standard tag set (Owner, Environment, CostCenter, AppName).
+Enforce via Azure Policy so resources without tags are denied or flagged.
+Use tags for cost allocation and governance.
+
+In-short: Standardize tags + enforce with Policy.
+
+Q18. Explain Reserved Instances, Spot VMs, and Savings Plans — when would you use each?
+
+Reserved Instances: Commit to 1- or 3-year VM usage for cheaper rates.
+Spot VMs: Very low cost but can be evicted anytime — for non-critical or batch jobs.
+Savings Plans: Flexible commitment across VM sizes for overall discount.
+
+In-short: Reserved = steady workloads; Spot = cheap/interruptible; Savings Plan = flexible discount.
+
+DevOps / IaC
+
+Q19. Explain how you’d set up a full CI/CD pipeline for an app deploying to Azure.
+
+Code in GitHub/Azure Repos.
+CI: Build/test pipeline.
+CD: Deploy to Azure App Service or AKS via Azure DevOps Pipelines or GitHub Actions.
+
+Use approvals and slots for production.
+
+In-short: Git + Pipeline (build/test) + Deploy to Azure with approvals.
+
+Q20. How would you structure Terraform or Bicep modules for multiple environments?
+
+Create reusable modules for each component (network, compute).
+Use environment-specific variables/parameter files.
+Keep state separate per environment.
+In-short: Modules + variables per environment + separate state.
+
+Q21. How do you roll back infrastructure changes in Azure if something goes wrong?
+
+In Terraform: keep previous state & run terraform apply with old config.
+In ARM/Bicep: keep previous template versions and re-deploy.
+Use version control for IaC.
+
+In-short: Version control templates & state → redeploy old version to roll back.
+
+Scenario-based
+
+Q22. A critical app is running in one region. Manager wants DR in another region with minimal cost — what do you propose?
+
+Use Geo-redundant storage for data.
+Keep infrastructure templates ready but deploy only on demand (cold DR).
+Use Traffic Manager to failover if region down.
+
+In-short: GRS for data + cold standby infra + Traffic Manager failover.
+
+Q23. A client wants to move from AWS to Azure — how would you plan the migration?
+
+Inventory & assess AWS workloads using Azure Migrate.
+Map services (EC2 → Azure VM, S3 → Blob, etc.).
+Choose migration method (lift & shift vs refactor).
+Test, cutover, optimize.
+
+In-short: Assess → Map services → Migrate/test → Cutover.
+
+Q24. How would you design role-based access so that developers can deploy but not delete production resources?
+
+Use built-in RBAC roles (like “Contributor” minus delete) or create custom roles.
+Assign least privilege at the resource group level.
+Combine with PIM for time-bound elevation.
+In-short: Custom RBAC role with deploy rights only + least privilege + PIM.
+
+---------------------------------------------------------------------------------------
+
+
+1️⃣ Geo-Redundant Storage (GRS)
+
+Think of it like this:
+You save a file in Azure Storage in Region A (say East US).
+Azure automatically makes a second hidden copy of that file in a paired region (say West US) far away.
+So if Region A has a big outage, the data still exists safely in Region B
+GRS = copy to another region (for disaster recovery).
+RA-GRS = same as above, but also lets you read the backup copy in the second region.
+
+In short: Azure keeps an automatic backup copy of your storage in another region for safety.
+
+2️⃣ How Peering is Done (VNet Peering)
+
+Imagine you have two Azure virtual networks (VNets) — like two separate office LANs.
+Peering is like making a direct private road between them so they can talk as if they’re one network.
+How you do it:
+
+Go to VNet1 → Peerings → Add peering → select VNet2.
+In VNet2, also create a peering back to VNet1.
+Allow traffic both ways if needed.
+It’s instant — no VPN appliance, no internet.
+For different regions, use Global VNet Peering (same steps).
+
+In short: VNet peering = direct private connection between two VNets (fast, no VPN).
+
+3️⃣ How to Secure Blob Storage
+
+Blob storage is like a big public bucket by default — but you can lock it down easily:
+Turn off public access at the storage account level (Azure Portal → Configuration → Public access = Disabled).
+Use RBAC (role-based access) or Shared Access Signatures (SAS) with expiry to control who gets in.
+For internal apps, use Private Endpoints so the storage account has a private IP inside your VNet (no internet).
+Enable encryption (Azure does at rest automatically, you can use your own keys if needed).
+
+In short: Disable public access + use RBAC/SAS for permissions + Private Endpoint for private IP + encryption on.
+
+
+
+-------------------------------------------------------------------------
+
+1️⃣ What is terraform taint and when would you use it?
+
+terraform taint marks a resource in the state file as “tainted.”
+Next time you run terraform apply, Terraform will destroy and recreate that resource.
+Useful when a resource is corrupted or misbehaving but Terraform doesn’t detect any config change.
+
+In-short:
+terraform taint = force Terraform to recreate a resource on next apply.
+
+2️⃣ Difference between local state and remote state
+Feature	Local State	Remote State
+Where stored	On your local machine as terraform.tfstate	In a backend (S3, Azure Storage, Terraform Cloud, etc.)
+Collaboration	Not ideal — single person only	Multiple users can share
+Security	Risk of losing or leaking	Can enable encryption, access control
+Locking	Manual	Many backends support state locking
+
+In-short:
+Local = file on your laptop (not team-friendly); Remote = shared, secure, supports locking.
+
+3️⃣ How do you handle dependencies between resources?
+
+Terraform automatically infers dependencies if one resource references another (like using its ID).
+If Terraform can’t infer it, use the depends_on argument to explicitly tell Terraform the order.
+
+In-short:
+Reference outputs to create implicit dependencies; use depends_on for explicit ones.
+
+4️⃣ What is a data source in Terraform?
+
+A data source lets you fetch information about existing infrastructure without creating it.
+
+Example: data "azurerm_resource_group" "example" { name = "rg1" } — fetches details of an existing RG to use in your config.
+
+In-short:
+Data source = read-only information about existing resources.
+
+5️⃣ How do you upgrade Terraform version safely?
+
+Check the Terraform release notes for breaking changes.
+Upgrade on a test environment first, run terraform init -upgrade.
+Make sure all your providers and modules are compatible.
+Keep Terraform code in version control so you can roll back.
+
+In-short:
+Read release notes → test upgrade in non-prod → terraform init -upgrade → verify apply plan.
+
+6️⃣ How do you structure Terraform for multi-cloud?
+
+Keep each cloud (Azure, AWS, GCP) in its own module or folder.
+Use separate providers with aliases (provider "aws" { alias = "prod" }).
+Keep separate state files/backends for each cloud.
+Use variables for common patterns, but don’t mix one state across clouds.
+
+In-short:
+Separate modules and state per cloud; use provider aliases.
+
+7️⃣ You changed a variable but Terraform shows no changes. Why?
+
+The variable might not actually affect any resource property.
+Or it’s only used in outputs or locals.
+Or you changed the default in code but also passed a value from CLI or .tfvars, overriding it.
+
+In-short:
+Variable not used in resources or overridden elsewhere → no change in plan.
+
+8️⃣ How would you migrate Terraform state from local to remote backend?
+
+Add the backend block to your Terraform config (e.g., S3 or Azure Storage).
+Run terraform init — Terraform will detect backend change and ask to migrate the state automatically.
+Confirm to upload the state.
+
+In-short:
+Configure backend block → terraform init → approve migration.
+
+9️⃣ Resource was deleted manually from the console. How would you fix Terraform state?
+
+Run terraform plan — it will show the resource is missing and wants to create it.
+If you want Terraform to recreate it, just run terraform apply.
+If the resource was replaced manually and you want Terraform to adopt it, use terraform import to bring the real resource into the state.
+
+In-short:
+Missing resource: run plan/apply to recreate, or terraform import to sync existing one into state.
+
+
+----------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

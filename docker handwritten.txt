@@ -1,0 +1,392 @@
+Docker
+---------
+
+13th May -- TODAY's target -- 2 hours docker video
+
+
+What is docker? what is container
+--
+
+What is container - 
+1. A way to pakcage the application with all the neccessary 
+dependencies and configurations.
+2. It is portable and can be moved around
+3. Makes deployment easy and more efficient.
+
+Where do containers live?
+Containers do have some space and they live or stored in these thingsw:
+1. Container repository
+2. Private repository
+3. Dockerhub - A public repository.
+
+Any app image can be found on public repository.
+
+Before Containers - 
+1. Installation process will vary on each OS environment.
+2. Many steps where something can go wrong 
+
+After Containers:
+1. 	OWN Isolated environment.
+2. packaged with all needed configurations
+3. second person can fetch and download the same container of first and sarting the docker is always same
+4. one command to install the app 
+5. run same app with 2 different versions.
+
+Application deployment before container:
+
+1. configurations on server needed
+2. dependencies version conflicts
+3. misunderstandings
+4. textual guide of deployment.
+
+After container for app deployment:
+1. dev and ops work together to package the app in a container/
+2. no config needed on server except docker runtime
+
+---
+what is container:
+1. layer of images
+2. mostly linux base image because small in size
+3. application image on top
+
+
+Practical example:
+
+Now for example you want to download the docker container so directly
+I'll go to Dockerhub then search the application which I want to download,
+then it will give me all the avialable versions, I just need to seaarch 
+which version I want to download and then command will also be there
+that docker run postgres:9.6 then it will download the container and 
+it will download in all the layers which we discussed earlier. 
+
+layers are downloaded why because if tomorrow you want to download new
+version then everything will remain same and omly different layers willget
+downloaded.
+
+By docker run, the application starts after download.
+by command Docker ps we can see all the running containers.
+
+----
+Docker image vs container
+
+1. image is a actual package ( postgres, java, dependencies etc )
+2. it can be moved around
+3. container is when I pull that image in my local environment and start 
+the application and after starting container environment is created.
+4. Image is not running but container is running.
+
+---
+Docker Vs virtual machines
+1. OS has 2 layers, OS layer and application layers
+2. VM consumes more space and cant be moved around.
+3. Size of docker image is much smaller 
+4. Docker container are much faster and run faster
+
+---
+Docker Installation
+1. we can simply have install docker over net and we will have commands and
+instrcutions to install docker.
+2. docker natively runs on windows 10, for workaround we have docker toolbox
+3. Docker engine should be there to install the docker and atleast 4GB of RAM.
+4. Docker installation in Windows -- pre-req - windows version suitable and virtualaisation should be enabled and we can download windows installer from stable channel and then install the application. 
+Docker installation on Linux - read from chatgpt
+5. Docker Toolbox - is basically installer as a workaround.
+
+-----
+Main Docker commands:
+
+Here we'll learn things like:
+1. Container vs image
+2. version and tag
+3. docker commands - docker pull, docker run , docker start. docker ps, docker stop , docker logs, docker exec-it
+
+
+Cont vs image
+Container is a running instance of image.
+there is always port binded to a container by which it talk to application running inside the container.
+
+In docker hub all the artificats are images, when we pull a image in our local, different layers get downloaded, we can check all the images in our laptop by command ( chatgpt). 
+
+when we run that image by docker run to connect the app then we need to get container. then we do docker ps to get all the running containers. 
+docker ps give all the info about the container including port etc.
+
+by docker ps we can get ID of a container so by taking ID we can start stop a conatiner by docker start ID, docker stop ID.
+
+alternatively if you dont have id after stop then make docker ps -a to get all the container.
+
+docker run is basically short command to pull image and start thr image 
+
+----
+if I have two containers of same application e.g postgres but versions are different then they will/may have the same port numbers, now for this we'll study Container port vs HOST port.
+
+Container port vs HOST port:
+1. Multiple containers can run on your host machine and our local machine has only certain ports avialable and we need to create binding between container port and our local machine ports.
+2. bind 2 different version on laptop - docker run -p6000:6379 ----> read this from chatgpt, also read detach mode -d
+
+-----
+Debugging containers 
+
+docker logs, docker exec-it
+
+if something went wrong in the container then we want logs of the container. 
+simple - docker logs ID(ID of the container)
+alsolike name of container instead 	id,
+Docker logs name
+
+another useful command is docker exec-it, we get terminal of the running container to nagivate into directory etc any stuff
+
+command docker exec-it ID /bin/bash
+then we get inside container as a root user. so we have a virtual FS in our container.
+
+in order to exit the terminal simply write exit.
+
+--
+difference btw start and run
+
+run can create a specific image but start works with only containers start stop.
+
+-----
+Demo project
+
+-- for example you are developing a javascript application and for that you require a mongo DB package which you take from Dockerhub.
+then you commit it to GIT and then use an integration tool like Jenkins and then push to docker repository. not if someone wants to work of develop anything then from docker repository it'll pull both the images.
+first image of mongoDB and second your private repo.
+
+---
+hands on Demo project:
+
+ask from chatgpt
+
+----
+learn docker network:
+
+Docker Network:
+Docker creates an isolated docker network where docker container runs in. in our case mongo DB and mongo express and application running outside the container connects to them via localhost and port number so later when we pack the application we get Containers of mongo and js application. 
+
+docker by default provide network - docker network
+now what we can do is to create our own network for mongo-db and call it anything.
+
+command 0 docker network create mongo-network
+then it is created and can be seen as docket network ps
+
+---
+Run mongo containers:
+docker run p27017:27017 -d -e MONGO_INITDB_ROOT_USERNAME=admin MONGO_INITDB_ROOT_password=pass --namae mongodb -net mongo-network mongo
+
+
+-e means the environmental variables by which we are setting up username and password. above we gave the port, network, id, pass etc in detach mode.
+
+--
+now we ran mongo and now we want to start the mongo express to attach with the mongo db
+
+you can get environmental variables from docker hub.
+
+docker run -d -p 8081:8081 MONGO_INITDB_ROOT_USERNAME=admin MONGO_INITDB_ROOT_password=pass--namae mongodb -net mongo-network mongo-express -e ME_CONFIG_MONGODB_SERVER=mongoDB
+
+running this exoress connects with mongodb
+
+----
+Docker Compose:
+
+Docker Compose:
+
+starting the container with command line might be tidious and very long so to make this short we need to automate this to run container so we use docker compose.
+
+docker compose yaml file the above command we ran can be
+
+version: '3'  --- version of compose
+services:
+   mongodb:  --- name of container
+     image: mongo
+	 ports: 
+	   - 27017:27017
+	 environment:   --- all the environment variables
+	 - MONGO_INITDB_ROOT_USERNAME=admin
+
+
+similarily we have for mongo-express
+
+it is very easy to edit these files, add new options etc, no network config in compose, container talk to each other by container name only
+
+--
+Creating a docker compose file:
+
+multiple containers can be under services. one container is above mongoDB, once it over we can start mongo-express.
+
+
+to execute the file -
+docker-compose -f mongo.yaml up 
+
+-f means which file and up means starting the container.
+
+both the logs of services will be in 1 and mongo-express needs to wait to run for mongo-db to establish the network
+.
+to stop - docker-compose -f mongo.yaml down
+
+---
+Dockerfile - Build your own image.
+
+eg we develop a javascript app and then to git then to jenkins and jenkins package into an docker image and then we push to docker repo.
+
+what is dockerfile
+
+- blueprint to create images.
+
+
+From node --- start by basing it on another image
+ENV MONGO_INITDB_ROOT_USERNAME=admin MONGO_INITDB_ROOT_password=password
+
+RUN mkdir -p /home/app    ---- by run we can make any kind of home directory. Directory is created inside of the container.
+
+COPY ./home/app -- it executes on the local host.
+
+CMD ["node",'server.js']  -- start eh app with node server.js
+
+----
+
+Create a dockerfile
+
+From node:13-alpine (base image) 
+ENV MONGO_INITDB_ROOT_USERNAME=admin MONGO_INITDB_ROOT_password=password
+
+RUN mkdir -p /home/app    
+
+COPY ./home/app 
+CMD ["node",'server.js']  
+
+name of file always must be "Dockerfile"
+
+---
+Build image using dockerfile.
+
+command:
+docker build -t my-app:1.0    -- here we need to give an image name which we want to build and tag like 1.0 or any.
+
+executing this build image for us.
+
+----
+now we can run the container docker run my-app:1.0
+## when you adjust the dockerfile you must rebuild the image.
+
+old image cannot be reconsidered.
+
+delete a image
+
+docker rmi ID
+
+delete a container -- docker rm ID
+
+---
+once we exeucte and build a image then we can go inside contianer bash by exec and check env variables in /env etc and similarily with other things mentioned in the dockerfile.
+
+-----
+Private docker registry:
+
+--Docker private repository
+registry options
+build and tag an image
+docker login
+docker push
+
+Private repository for docker is also called as docker registry.
+
+For repo creation, we'll go to AWS, go to ECR- R is for registry. we can name the repo and in AWS we create docker repository per image, we can t have repo where we can have repo for multiple images.
+we only can have different tags/versions of same image.
+
+--
+to push the image from local to aws
+in aws we have view push commands.
+
+RUle 1 for push, you always have to login to private repo = docker login.
+
+caommad - docker login
+then in aws command we have command aws ecr get-login 
+
+pre-req-
+1. AWS CLI needs to be installed
+2. Credentials configured
+
+---
+image naming in docker registry:
+
+imagename:tag
+
+in Docker Hub
+- docker pull mongo:4.2
+
+in AWS ECR:
+- docker pull full domain:my-app1.0
+
+docker tag = rename the image
+
+then we have push command
+docker push domainname
+
+----
+Deploy containzeid app
+
+overview:
+- image from a private repository
+- deploy multiple containers
+- deployment server
+
+basically pull the repo image to our dev server from aws repo
+
+this we can do with help of docker compose
+
+version: 3
+services:
+  my-app:
+    image: rfr4343535.amazonaws.com/myapp:1.0
+	ports:
+	- : 3000:3000
+	
+	
+	
+the server needs to login to pull from private repo but no login from public repo.
+
+for simulating the login we already have command in aws repo discussed above.
+
+then docker-compose mongo.yaml up
+
+---
+volumes:
+
+overview:
+why do wenneed docker volumes
+what is docker volumes
+3 volume types
+docker volumes in docker compoe file
+
+Comtainer has a virtual file system, if we save anything there, save it and restart the container, the data is gone in that cotainer. so we need docker volumes.
+
+in this folder in physical host file system is mounted into a virtual file system of docker. data gets automatically replicated.
+
+3 types of volumes:
+
+1. Host volume:docker run -v /host directory:/container directory
+You decide where on the host file system the reference is made.
+
+2. Anonymmous voloumes: docker run - v /container directory 
+here we specifies only container directory and host dorectory is taken care by docker itself and directory is automatically created by docker and mounted automatically. 
+for each container a folder is generated that gets mounted automatically.
+
+3. Named voloumes: docker run -v name:/container directory
+you can reference the voloume by name.
+should be used in production.
+
+---
+
+Docker voloume in docker-compose
+
+named volumes:
+
+version: 3
+services:
+  mongo-db:
+    image: mongo
+	ports:
+	- : 3000:3000
+	voloumes:
+	- db-data: /var/lib/mysql
+

@@ -1,0 +1,117 @@
+📝 Expanded Version – vRA + Terraform Combo Project
+
+Situation (what the environment looked like):
+Our company was already using vRealize Automation (vRA) as a self-service portal to provision on-premise VMware VMs. 
+Business units were happy with the portal but they were also starting to request cloud resources like Azure VMs and AWS services.
+If we gave them the Azure or AWS portal directly, they would lose the consistent approvals, naming standards, 
+and cost tracking we already had in vRA.
+
+Problem:
+vRA by itself can talk to VMware easily but its native support for Azure/AWS was limited and didn’t meet all our requirements.
+Terraform, on the other hand, is very good at creating cloud resources but it has no self-service portal for end-users.
+
+What I did (step by step):
+
+I created Terraform code for the Azure and AWS resources we needed (VMs, storage, networks).
+
+I stored the code in a shared repository so it could be versioned and updated easily.
+
+In vRA, I created a Cloud Template (blueprint) that looked to the end user just like any other vRA service.
+
+I then used vRA’s extensibility features (Event Subscriptions + vRO workflows or ABX actions) 
+to call the Terraform scripts whenever someone made a request.
+
+For example, when a user requested an Azure VM from vRA, behind the scenes vRA triggered 
+the Terraform code to build it in Azure.
+
+I also made sure vRA collected the output (IP address, VM name) from Terraform and showed 
+it back in the vRA portal so the user still saw a single deployment record.
+
+Result (benefit):
+
+The end-users continued to use the same vRA portal for both on-prem and cloud resources.
+
+Approvals, naming standards, tagging, and cost tracking were still enforced because the request started in vRA.
+
+We avoided teaching every team Terraform or giving them Azure credentials.
+
+In short, we combined vRA’s front-end portal and policies with Terraform’s cloud automation power, 
+creating one self-service portal for all environments (VMware + Azure + AWS).
+
+How to say it quickly (In-short):
+
+“We had vRA as our self-service portal for VMware. Teams started needing Azure and AWS resources. 
+I wrote Terraform code for those cloud resources and integrated it into vRA as an extensibility action. 
+So, end-users still used the same vRA portal, but behind the scenes Terraform created the cloud resources. 
+This gave us one consistent self-service portal for both on-prem and cloud.”
+
+
+
+---------------------------------------------------------------------------------------------------
+
+📝 Expanded Version – Azure Storage Backup Automation
+
+Situation (the problem):
+Our applications were generating a lot of log files every day. We were keeping these backups manually in a 
+file server which was expensive, hard to scale, and had no redundancy. Management asked us to make the backups more secure, highly available, and cheaper.
+
+What I did (step by step):
+
+I proposed using Azure Storage Account as the new backup location.
+
+In Terraform, I wrote code to create the storage account with Geo-Redundant Storage (GRS).
+
+GRS automatically keeps a copy of the data in another Azure region so even if one region fails, the data is safe.
+
+I also used Terraform to set up containers within the storage account for different apps.
+
+Added Lifecycle Management Policies (also defined in Terraform) so that logs older than 30 days automatically 
+move from the “Hot” tier to “Cool” or “Archive” tiers.
+
+This reduced costs because older data is cheaper to store.
+
+Integrated the application so it wrote its logs directly into this storage account.
+
+Result (benefit):
+
+Backups were now in a secure, redundant cloud location instead of an on-prem server.
+
+Even if an Azure region went down, logs were still safe in the secondary region.
+
+Lifecycle rules cut the storage bill significantly because cold logs cost less.
+
+There was almost no manual maintenance — Terraform managed the infrastructure and Azure managed the tiering.
+
+How to say it quickly (In-short):
+
+“We had to back up large amounts of logs securely and cheaply. I used Terraform to build an Azure Storage Account 
+with geo-redundant storage and lifecycle policies. New logs go into the hot tier, older logs automatically move to cheaper tiers. 
+This gave us durable backups with lower cost and almost no manual work.”
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

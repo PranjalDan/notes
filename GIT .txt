@@ -1,0 +1,194 @@
+1. What is Git?
+
+Git is a distributed version control system used to track changes in files and coordinate work among developers. It lets you:
+Manage code versions (history)
+Revert back to previous versions
+Collaborate with others via remote repositories (like GitHub)
+Work on different features simultaneously using branches
+Git is local and fast. It doesn't need an internet connection for most tasks.
+
+🔹 2. Installing and Setting Up Git
+
+✅ Installation:
+Download from: https://git-scm.com
+Install Git Bash (a command-line tool for Git)
+✅ One-time configuration:
+git config --global user.name "Your Name"
+git config --global user.email "your@email.com"
+🔍 Check configuration:
+git config --global user.name
+git config --global user.email
+🔹 3. Initialize a Repository
+🧱 Start version control in a folder:
+git init
+This creates a .git hidden folder — your repo starts tracking changes.
+🔎 Check repository status:
+
+git status
+Shows:
+
+Untracked files
+Changes staged for commit
+Modified but unstaged files
+
+🔹 4. Adding and Committing Files
+🟢 Add file to staging:
+
+git add filename.txt
+
+🟢 Add all files:
+git add .
+✅ Commit staged changes:
+git commit -m "Your message here"
+A commit is a snapshot of your project at that point.
+
+🔹 5. Viewing History
+📜 View commit history:
+
+git log
+Options:
+
+git log --oneline: Compact view
+git log --graph: See branches and merges visually
+
+🔹 6. Tracking Changes
+📂 Show unstaged changes:
+git diff
+📂 Show staged changes:
+
+git diff --cached
+🔹 7. Undoing Changes
+🔄 Unstage a file:
+
+git reset HEAD filename
+❌ Discard local changes:
+git checkout -- filename
+🔙 Undo last commit (keep changes staged):
+git reset --soft HEAD~1
+🔙 Undo last commit (remove changes):
+git reset --hard HEAD~1
+🔹 8. Working with Remote Repositories (GitHub)
+🔗 Add remote repo:
+
+git remote add origin https://github.com/user/repo.git
+⬆️ Push code to remote:
+
+git push -u origin main
+⬇️ Pull latest code:
+git pull origin main
+📥 Clone existing repo:
+git clone https://github.com/user/repo.git
+🔹 9. Branching
+🌿 List branches:
+
+git branch
+🌱 Create new branch:
+
+git branch new-feature
+🔁 Switch to branch:
+
+git checkout new-feature
+🌱 Create and switch:
+
+git checkout -b new-feature
+🔀 Merge a branch:
+bash
+Copy
+Edit
+git checkout main
+git merge new-feature
+❌ Delete branch:
+bash
+Copy
+Edit
+git branch -d new-feature
+🔹 10. Advanced Git
+📍 Git Stash (temporary save changes)
+bash
+Copy
+Edit
+git stash
+git stash apply
+🔧 Rebase (clean history)
+bash
+Copy
+Edit
+git checkout feature
+git rebase main
+🍒 Cherry-pick (copy commit)
+bash
+Copy
+Edit
+git cherry-pick <commit_hash>
+🔍 Git Tag
+bash
+Copy
+Edit
+git tag v1.0
+git push origin v1.0
+🔹 11. Most Used Git Commands
+Command	Purpose
+git init	Start a new repo
+git add .	Stage all changes
+git commit -m "msg"	Save changes to local repo
+git status	Show current status
+git log	Show commit history
+git diff	Show file differences
+git branch	List/create/delete branches
+git checkout	Switch branches or restore files
+git merge	Merge branches
+git push	Upload code to GitHub
+git pull	Fetch and merge from remote
+git clone	Download repo from GitHub
+git reset	Unstage or undo commits
+git stash	Temporarily save changes
+
+🔹 12. Git Interview Questions & Answers
+Q1. What is Git?
+A distributed version control system to track file changes and coordinate work between multiple people.
+
+Q2. Difference between Git and GitHub?
+
+Git: Tool for version control (local)
+
+GitHub: Cloud platform to host Git repositories
+
+Q3. What is a commit in Git?
+A snapshot of the project at a certain point. Stored with a unique hash (SHA).
+
+Q4. What is staging in Git?
+Intermediate area where changes are prepared before committing.
+
+Q5. Difference between git pull and git fetch?
+
+git fetch: Downloads changes but doesn’t merge
+
+git pull: Fetch + merge
+
+Q6. What is a branch in Git?
+A separate line of development. Helps in isolating features or fixes.
+
+Q7. What is merge conflict?
+When two branches modify the same lines — Git asks you to manually resolve.
+
+Q8. How do you resolve merge conflicts?
+
+Git highlights conflicts in the file
+
+Manually edit the file
+
+Then:
+
+bash
+Copy
+Edit
+git add .
+git commit -m "Resolved conflict"
+Q9. What is rebase?
+Rewrites commit history by placing your changes on top of another branch.
+
+Q10. How to undo a commit?
+
+git reset to remove from history
+
+git revert to create a new commit that undoes changes

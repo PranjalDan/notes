@@ -1,0 +1,72 @@
+Physical Volume (PV)
+A Physical Volume (PV) is the underlying storage device, such as a hard disk or partition, that you initialize for use in LVM.
+It could be a whole disk (e.g., /dev/sdb) or a partition of a disk (e.g., /dev/sda1).
+2. Volume Group (VG)
+A Volume Group (VG) is created by combining one or more Physical Volumes into a single storage pool.
+Think of it as a large container that can hold data, and you can create one or more Logical Volumes from this pool.
+You can add more Physical Volumes to a Volume Group to increase its capacity.
+3. Logical Volume (LV)
+A Logical Volume (LV) is a portion of the storage pool (VG) that you create to store data.
+LVs act like partitions, but they are much more flexible since they can be resized, extended, or even moved to different disks without much hassle.
+You can format an LV with a file system (e.g., ext4, XFS) and mount it to a directory, just like a regular partition.
+How LVM Works: An Example
+Create a Physical Volume (PV):
+
+First, you initialize a disk or partition as a Physical Volume using the pvcreate command.
+bash
+Copy code
+pvcreate /dev/sdb1  # Initialize /dev/sdb1 as a PV
+pvcreate /dev/sdc1  # Initialize another disk/partition as a PV
+Create a Volume Group (VG):
+
+Next, you combine one or more Physical Volumes into a Volume Group using the vgcreate command.
+bash
+Copy code
+vgcreate my_vg /dev/sdb1 /dev/sdc1  # Create a VG named 'my_vg' with PVs /dev/sdb1 and /dev/sdc1
+Create a Logical Volume (LV):
+
+From the Volume Group, you can create one or more Logical Volumes using the lvcreate command.
+bash
+Copy code
+lvcreate -L 10G -n my_lv my_vg  # Create a 10GB LV named 'my_lv' from the VG 'my_vg'
+Format and Mount the Logical Volume:
+
+After creating the Logical Volume, you can format it with a file system and mount it.
+bash
+Copy code
+mkfs.ext4 /dev/my_vg/my_lv  # Format the LV with the ext4 file system
+mkdir /mnt/mydata           # Create a mount point
+mount /dev/my_vg/my_lv /mnt/mydata  # Mount the LV
+Extending a Logical Volume:
+
+One of the key benefits of LVM is that you can easily extend the size of a Logical Volume.
+bash
+Copy code
+lvextend -L +5G /dev/my_vg/my_lv  # Increase the size of 'my_lv' by 5GB
+resize2fs /dev/my_vg/my_lv        # Resize the file system to use the new space
+Summary of LVM Concepts
+Physical Volume (PV): The actual disk or partition you initialize for LVM.
+Volume Group (VG): A pool of storage created from one or more Physical Volumes.
+Logical Volume (LV): A slice of the Volume Group that you create to store data.
+Advantages of LVM
+Flexibility: Easily resize, extend, and manage disk space without worrying about physical disk limitations.
+Dynamic Storage: Add more storage to a Volume Group as needed and extend Logical Volumes without downtime.
+Snapshotting: Create snapshots of Logical Volumes for backup or testing purposes.
+Practical Exercise
+Setup LVM:
+
+Initialize a disk as a Physical Volume.
+Create a Volume Group from one or more Physical Volumes.
+Create a Logical Volume, format it, and mount it.
+Extend a Logical Volume:
+
+Increase the size of an existing Logical Volume and resize the file system to use the new space.
+Conclusion
+Understanding LVM and its components—Physical Volumes, Volume Groups, and Logical Volumes—gives you powerful tools for managing disk space on a Linux system. It allows you to easily manage, resize, and extend your storage, making it ideal for environments where disk usage can grow dynamically.
+
+Let me know if you’d like to practice this or move on to the next topic!
+
+
+A file system is a method used by operating systems to organize and store data on storage devices like hard drives, SSDs, USB drives, etc. 
+It defines how data is structured, stored, and retrieved.
+

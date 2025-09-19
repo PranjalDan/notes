@@ -1,0 +1,84 @@
+✅ Docker Basics
+What is a Docker container, and how is it different from a virtual machine?
+A container is a lightweight, portable unit that packages an application with its dependencies and configurations. 
+Unlike VMs, containers share the host OS and are faster and smaller. VMs require a full OS and consume more space.
+
+Why are containers considered portable?
+Because they include everything needed to run the application, they can run the same way on any system with Docker installed.
+
+What problem did containers solve that traditional deployments faced?
+Containers removed dependency/version conflicts and eliminated OS-specific setup issues, making app deployment easier and more consistent.
+
+✅ Docker Images & Containers
+What is the difference between a Docker image and a Docker container?
+
+An image is the blueprint (code + dependencies).
+
+A container is a running instance of that image.
+
+What happens when you run docker run postgres:9.6?
+It pulls the postgres:9.6 image (if not already present), downloads its layers, creates a container, and starts it.
+
+Why are Docker images built in layers?
+To enable efficient reuse and caching — only changed layers are updated or downloaded.
+
+What is the benefit of layered images when updating a container?
+Only the new or changed layers are downloaded, saving bandwidth and speeding up builds.
+
+✅ Docker Repositories
+What are the different types of container repositories?
+
+DockerHub (public)
+
+Private repository
+
+Container registry
+
+If you want to download a MongoDB image, where do you search for it?
+On DockerHub, search for "MongoDB".
+
+✅ Docker Commands
+What command would you use to:
+
+Check running containers? → docker ps
+
+Check all containers including stopped? → docker ps -a
+
+Stop a container using its ID? → docker stop <container_id>
+
+Start a stopped container? → docker start <container_id>
+
+What’s the difference between docker start and docker run?
+
+docker run creates and starts a new container from an image.
+
+docker start starts an existing (stopped) container.
+
+What does docker exec -it <container_id> /bin/bash do?
+It opens an interactive terminal inside the running container.
+
+✅ Networking & Port Binding
+What’s the purpose of mapping ports between host and container?
+So that services running inside the container can be accessed via your local machine (host).
+
+You have 2 Postgres containers running on the same machine. How do you avoid port conflict?
+Map them to different host ports using -p.
+Example: -p 5432:5432 and -p 5433:5432
+
+Explain the meaning of -p 6000:6379 in a docker run command.
+It maps container's port 6379 (e.g., Redis default port) to 6000 on your host. You access it on localhost:6000.
+
+✅ Debugging & Logs
+How can you check the logs of a specific container?
+docker logs <container_id or name>
+
+How do you get into the shell of a running container to troubleshoot an issue?
+docker exec -it <container_id> /bin/bash
+
+✅ Real-World Usage
+How can Docker help with CI/CD pipelines?
+Docker allows you to package code and dependencies in an image, push it to a registry, and deploy the exact same image in every environment (dev, test, prod).
+
+In your JavaScript + MongoDB demo project, what role does Docker play for the database?
+It provides an isolated MongoDB container that runs instantly without installing MongoDB locally.
+

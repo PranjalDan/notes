@@ -1,0 +1,149 @@
+Intro to K8
+topics to be covered
+- what is K8
+- ARCHITECUTE
+Components
+Minikube and kubectl
+main kubectl commands
+k8 yaml config
+HANDS on demo
+
+Advanced topics:
+K8 Namespaces
+K8s Ingress
+Helm
+Volumes
+Stateful set
+K8s servies
+
+
+------------
+what is kubernetes
+Open source container orchestration tool.
+developed by google.
+helps you manage containezied applications in different deployment evironments.
+
+---
+
+need for container orchestration tool?
+increased usage of containers.
+
+what problem does K8 solve? 
+- high avialablity or no downtime
+- scalablity or high performance
+- diaster recovery - backup and restore.
+
+---
+Kubernetes components:
+kubernetes have tons of components but most of the times we work with handful of them only
+
+--
+
+K8s is open source and used for 
+Automating deployment, 
+management of Containerized apps
+Scaling.
+
+---
+What is container orchestration:
+
+K8s is a master who manages all the containers
+
+--
+Use ase of K8 in real life:
+For example there is a developer who develops a wesite with nodejs and put it in a container and uses images etc. now if heavy load comes on website then it may crash or any issue with server then too server may crash, for this what we do that we simply make app avialablity on multiple server by which load balancing comes and all these nodes are managed by K8s.
+
+
+---
+architecture of K8s
+
+when you deploy Kubernetes, yiu get a cluster.
+two important parts are: Master(Control plane) and worker nodes.
+
+---
+what is node:
+
+Node is basically a single server where our containezied application is there. 
+
+Master node connects to worker node and each master node is connected through API to worker node and each worker node has
+agent installed named as Kubelet.
+
+----
+Different components of K8.
+
+API server(used for connecting master to worker node)
+ETCD,kubeproxy,scheduler,scheduler,kubelet, kube container, container runtime.
+
+---
+what is POD K8s.
+
+A single instance of a running process in a cluster. It can run one or more containers and share the same resources.
+A Pod is like a mini-house that holds one or more containers, giving them a shared space to live and work together.
+
+cluster is basically group of nodes.
+
+---
+Componets of Master:
+
+API Server, scheduler, ETCD, Control manager
+
+assign node to newly created PODS - Scheduler
+key value store, having all cluster data - ETCD
+responsible for managing the state of server. - Control manager
+
+
+If I want to run any container so which node we want to assign is work of scheduler.
+
+ETCD contains all the info and data.
+
+Control manager manages and check problems.
+
+----
+
+Worker nodes components:
+
+Kubelet - it is an agent which make sure that containers are running in pods.
+
+POD - container runs in a pod ( isolated environment ). kubelete have control over pod
+
+Kube-proxy - maintains network rules for communication with pods.
+
+Container runtime - a tool responsible for running containers.
+
+
+-------
+Features of Kuberetes:
+
+1. Container orchestration
+2. scalablity
+3. load balancing
+4. high avialablity
+5. rollouts and rollback.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

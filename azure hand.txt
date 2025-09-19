@@ -1,0 +1,318 @@
+Azure service
+-----------------------------
+
+waht is cloud computing:
+renting hardware istead buying is all about.
+
+IAAS - Infra as service
+gives u full control over infra sources e.g virtual machine/storage etc.
+you must take care of all the admin tasks such as upgrades, backup, patching etc
+per-per-use, EC2, VM, GCE
+
+PAAS:
+Give runtime env/platform to deploy application and development tools
+azure take care of all the admin tasks including automated backups
+Pay per service model
+
+SAAS:
+give app access to end users
+azure takes care of all admin tasks
+pay per subscription model.
+
+---
+learn shared responsiblity model
+
+-----
+
+pub cloud - resouces are shared among multiple users and users pay of resources they use
+AWS, GCP, Azure
+
+private cloud - resources not shared with other orgs, high security
+private data center
+
+
+hybrid - public, private both in an interconnected env.
+
+---
+features of pub cloud:
+
+high avialablity and fault tolrence (load balancing)
+scalablity - ability to adjust according to demand ( learn vertical scaling and horizontal scaling)
+elasticty - system scale up and down bsed on demand
+cost effectiveness 
+
+----------------
+azure account --- subscription ---- resource groups --- resources
+
+one resouce can only be part of one resource group
+
+---------------------------
+learn what is cloud shell
+
+---------
+create a virtual machine
+
+search virtual machine, then create resouce group, other fileds, sizes, ports ( 22 should be allowed as it is ssh)
+
+
+learn avialablity zone -- group of datacenter
+
+what all things are required to create a vm
+
+-----------------------
+
+
+VM Scale set
+
+learn scale in and scale out
+
+
+go to azure portal and search vms
+
+and same thing u did to provision vm.
+then count of vm, scaling policy
+
+scale out etc etc
+
+
+fault domain - physical servers rack
+update domain - learn
+
+-----------------
+azure virtual desktop
+type of managed virtual machine that enables multiple users to access virtual desktops and app from anywhere any device
+
+-----------
+diff btw azure virtual desktop and vm
+--------------
+
+what is virtualization. -- multiple os system on same machine
+
+waht is virtual machine:
+what are containers
+-----------------------
+
+azure container instances:
+
+azure container registry:
+
+then networking, advanced, tags
+
+then once running we can connect to container, ssh etc.
+
+---------------
+
+Azure functions:
+
+Event driven
+serverless
+compute
+
+
+Cosr effective, pay for no. of execution
+faster
+scalable
+flexible
+
+
+creating a function:
+click create on function app, publish, runtime stack etc
+
+plan type serverless
+
+
+learn complete function
+-----------------
+
+azure app services:
+
+- it is platform as a services
+to build and host applicaiton of any progamming lamguage
+
+web apps using azure web apps
+background jobs using azure web jobs
+mobile backends using mobile apps
+restful apis using API apps
+
+supports scaling and high avialablity
+
+supports linux and windows
+
+microsoft focuses on infra
+
+
+-----------
+web apps: full support of hosting web apps
+python, php, ruby, java, asp etc
+
+api apps: 
+rest based web apis by using choice of language
+
+web jobs
+similar to cronjob -- can be scheduled
+
+u can use to run a program
+
+
+mobile apps:
+build backend for ios/android
+
+---------------------------------
+
+learn deployment slots.
+
+-----------------------------------
+
+VNET peering
+connects vnets from multiple regions
+over private ip
+traffic remains within microsoft networks
+
+
+
+we have resources deyploed in vnet and also on on-premises network so to communicate between them
+we use VPN
+IPsec S2S VPN tunnel
+P2S VPN channel
+
+learn express route.
+
+partner edge, ms egde
+
+primary circuit, secondary circuit
+
+faster speed, lower latency, higher bandwidth
+---------------------
+
+Azure DNS
+
+buy domain for yealy fees from app service
+Azure DNS can host ur domain
+lets us manage ur dns domain
+
+--------------
+Learn BLOB storage
+massive amount of large unstructed data ( any files ) can be stored into Binary large objects BLOBS
+
+blob storage contains multiple blob containers
+
+backup and restore data
+storing files for distributed access
+stream video and audio
+storing data for analysis on on prem.
+accessed over https etc
+-------------------------------
+Azure file storage
+learn file shares and files.
+instead containers we have file shares.
+accessed by SMB, NFS protocol
+
+enables u to create files shares in cloud and access these file shares from anywhere
+
+SMB model learn
+
+
+-------------------------------
+
+azure queue storage
+asyncornous processing
+
+----------
+
+semi structed data
+storage account learn
+
+-----------
+azure migrate
+azure database migration
+azure data box
+
+------
+azcopy
+azure storage explorer
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
